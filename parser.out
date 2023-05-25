@@ -20,95 +20,85 @@ Rule 14    statement -> condition
 Rule 15    statement -> cycle
 Rule 16    statement -> print
 Rule 17    print -> COUT LPAREN c m RPAREN SCOLON
-Rule 18    c -> expresion
-Rule 19    c -> CTESTRING
-Rule 20    m -> COMMA c m
-Rule 21    m -> empty
-Rule 22    assign -> ID EQUALS expresion SCOLON
-Rule 23    cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON
-Rule 24    expresion -> exp x
-Rule 25    expresion -> exp
-Rule 26    x -> GT exp
-Rule 27    x -> LT exp
-Rule 28    x -> NE exp
-Rule 29    condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON
-Rule 30    condition -> IF LPAREN expresion RPAREN body SCOLON
-Rule 31    cte -> CTEINT
-Rule 32    cte -> CTEFLOAT
-Rule 33    factor -> LPAREN expresion RPAREN
-Rule 34    factor -> factor_op ID
-Rule 35    factor -> cte
-Rule 36    factor_op -> PLUS
-Rule 37    factor_op -> MINUS
-Rule 38    exp -> termino z
-Rule 39    z -> PLUS exp
-Rule 40    z -> MINUS exp
-Rule 41    z -> empty
-Rule 42    termino -> factor y
-Rule 43    y -> TIMES termino
-Rule 44    y -> DIVIDE termino
-Rule 45    y -> empty
-Rule 46    empty -> <empty>
+Rule 18    c -> expr
+Rule 19    c -> relexpr
+Rule 20    c -> CTESTRING
+Rule 21    m -> COMMA c m
+Rule 22    m -> empty
+Rule 23    assign -> ID EQUALS expr SCOLON
+Rule 24    cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON
+Rule 25    expr -> expr PLUS expr
+Rule 26    expr -> expr MINUS expr
+Rule 27    expr -> expr TIMES expr
+Rule 28    expr -> expr DIVIDE expr
+Rule 29    expr -> INTEGER
+Rule 30    expr -> FLOAT
+Rule 31    expr -> ID
+Rule 32    expr -> cte
+Rule 33    expr -> LPAREN expr RPAREN
+Rule 34    relexpr -> expr LT expr
+Rule 35    relexpr -> expr GT expr
+Rule 36    relexpr -> expr EQUALS expr
+Rule 37    relexpr -> expr NE expr
+Rule 38    condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON
+Rule 39    condition -> IF LPAREN relexpr RPAREN body SCOLON
+Rule 40    cte -> CTEINT
+Rule 41    cte -> CTEFLOAT
+Rule 42    empty -> <empty>
 
 Terminals, with rules where they appear
 
 COLON                : 4
-COMMA                : 7 20
+COMMA                : 7 21
 COUT                 : 17
-CTEFLOAT             : 32
-CTEINT               : 31
-CTESTRING            : 19
-DIVIDE               : 44
-DO                   : 23
-ELSE                 : 29
+CTEFLOAT             : 41
+CTEINT               : 40
+CTESTRING            : 20
+DIVIDE               : 28
+DO                   : 24
+ELSE                 : 38
 END                  : 1
-EQUALS               : 22
-FLOAT                : 9
-GT                   : 26
-ID                   : 1 6 7 22 34
-IF                   : 29 30
-INTEGER              : 8
+EQUALS               : 23 36
+FLOAT                : 9 30
+GT                   : 35
+ID                   : 1 6 7 23 31
+IF                   : 38 39
+INTEGER              : 8 29
 LBRACE               : 10
-LPAREN               : 17 23 29 30 33
-LT                   : 27
-MINUS                : 37 40
-NE                   : 28
-PLUS                 : 36 39
+LPAREN               : 17 24 33 38 39
+LT                   : 34
+MINUS                : 26
+NE                   : 37
+PLUS                 : 25
 PROGRAM              : 1
 RBRACE               : 10
-RPAREN               : 17 23 29 30 33
-SCOLON               : 1 4 17 22 23 29 30
-TIMES                : 43
+RPAREN               : 17 24 33 38 39
+SCOLON               : 1 4 17 23 24 38 39
+TIMES                : 27
 VAR                  : 2
-WHILE                : 23
+WHILE                : 24
 error                : 
 
 Nonterminals, with rules where they appear
 
 assign               : 13
-body                 : 1 23 29 29 30
-c                    : 17 20
+body                 : 1 24 38 38 39
+c                    : 17 21
 condition            : 14
-cte                  : 35
+cte                  : 32
 cycle                : 15
-empty                : 3 5 12 21 41 45
-exp                  : 24 25 26 27 28 39 40
-expresion            : 18 22 23 29 30 33
-factor               : 42
-factor_op            : 34
-m                    : 17 20
+empty                : 3 5 12 22
+expr                 : 18 23 25 25 26 26 27 27 28 28 33 34 34 35 35 36 36 37 37
+m                    : 17 21
 print                : 16
 programa             : 0
+relexpr              : 19 24 38 39
 s                    : 10 11
 statement            : 11
-termino              : 38 43 44
 type                 : 4
 typed_vars           : 2 4
 vars                 : 1 2
 vars_list            : 4 7
-x                    : 24
-y                    : 42
-z                    : 38
 
 Parsing method: LALR
 
@@ -146,10 +136,10 @@ state 4
     (1) programa -> PROGRAM ID SCOLON . vars body END
     (2) vars -> . VAR typed_vars vars
     (3) vars -> . empty
-    (46) empty -> .
+    (42) empty -> .
 
     VAR             shift and go to state 6
-    LBRACE          reduce using rule 46 (empty -> .)
+    LBRACE          reduce using rule 42 (empty -> .)
 
     vars                           shift and go to state 5
     empty                          shift and go to state 7
@@ -170,11 +160,11 @@ state 6
     (5) typed_vars -> . empty
     (6) vars_list -> . ID
     (7) vars_list -> . ID COMMA vars_list
-    (46) empty -> .
+    (42) empty -> .
 
     ID              shift and go to state 13
-    VAR             reduce using rule 46 (empty -> .)
-    LBRACE          reduce using rule 46 (empty -> .)
+    VAR             reduce using rule 42 (empty -> .)
+    LBRACE          reduce using rule 42 (empty -> .)
 
     typed_vars                     shift and go to state 10
     vars_list                      shift and go to state 11
@@ -203,14 +193,14 @@ state 9
     (14) statement -> . condition
     (15) statement -> . cycle
     (16) statement -> . print
-    (46) empty -> .
-    (22) assign -> . ID EQUALS expresion SCOLON
-    (29) condition -> . IF LPAREN expresion RPAREN body ELSE body SCOLON
-    (30) condition -> . IF LPAREN expresion RPAREN body SCOLON
-    (23) cycle -> . DO body WHILE LPAREN expresion RPAREN SCOLON
+    (42) empty -> .
+    (23) assign -> . ID EQUALS expr SCOLON
+    (38) condition -> . IF LPAREN relexpr RPAREN body ELSE body SCOLON
+    (39) condition -> . IF LPAREN relexpr RPAREN body SCOLON
+    (24) cycle -> . DO body WHILE LPAREN relexpr RPAREN SCOLON
     (17) print -> . COUT LPAREN c m RPAREN SCOLON
 
-    RBRACE          reduce using rule 46 (empty -> .)
+    RBRACE          reduce using rule 42 (empty -> .)
     ID              shift and go to state 22
     IF              shift and go to state 23
     DO              shift and go to state 24
@@ -229,10 +219,10 @@ state 10
     (2) vars -> VAR typed_vars . vars
     (2) vars -> . VAR typed_vars vars
     (3) vars -> . empty
-    (46) empty -> .
+    (42) empty -> .
 
     VAR             shift and go to state 6
-    LBRACE          reduce using rule 46 (empty -> .)
+    LBRACE          reduce using rule 42 (empty -> .)
 
     vars                           shift and go to state 26
     empty                          shift and go to state 7
@@ -284,14 +274,14 @@ state 16
     (14) statement -> . condition
     (15) statement -> . cycle
     (16) statement -> . print
-    (46) empty -> .
-    (22) assign -> . ID EQUALS expresion SCOLON
-    (29) condition -> . IF LPAREN expresion RPAREN body ELSE body SCOLON
-    (30) condition -> . IF LPAREN expresion RPAREN body SCOLON
-    (23) cycle -> . DO body WHILE LPAREN expresion RPAREN SCOLON
+    (42) empty -> .
+    (23) assign -> . ID EQUALS expr SCOLON
+    (38) condition -> . IF LPAREN relexpr RPAREN body ELSE body SCOLON
+    (39) condition -> . IF LPAREN relexpr RPAREN body SCOLON
+    (24) cycle -> . DO body WHILE LPAREN relexpr RPAREN SCOLON
     (17) print -> . COUT LPAREN c m RPAREN SCOLON
 
-    RBRACE          reduce using rule 46 (empty -> .)
+    RBRACE          reduce using rule 42 (empty -> .)
     ID              shift and go to state 22
     IF              shift and go to state 23
     DO              shift and go to state 24
@@ -358,22 +348,22 @@ state 21
 
 state 22
 
-    (22) assign -> ID . EQUALS expresion SCOLON
+    (23) assign -> ID . EQUALS expr SCOLON
 
     EQUALS          shift and go to state 31
 
 
 state 23
 
-    (29) condition -> IF . LPAREN expresion RPAREN body ELSE body SCOLON
-    (30) condition -> IF . LPAREN expresion RPAREN body SCOLON
+    (38) condition -> IF . LPAREN relexpr RPAREN body ELSE body SCOLON
+    (39) condition -> IF . LPAREN relexpr RPAREN body SCOLON
 
     LPAREN          shift and go to state 32
 
 
 state 24
 
-    (23) cycle -> DO . body WHILE LPAREN expresion RPAREN SCOLON
+    (24) cycle -> DO . body WHILE LPAREN relexpr RPAREN SCOLON
     (10) body -> . LBRACE s RBRACE
 
     LBRACE          shift and go to state 9
@@ -434,105 +424,107 @@ state 30
 
 state 31
 
-    (22) assign -> ID EQUALS . expresion SCOLON
-    (24) expresion -> . exp x
-    (25) expresion -> . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (23) assign -> ID EQUALS . expr SCOLON
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    expresion                      shift and go to state 39
-    exp                            shift and go to state 40
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    expr                           shift and go to state 40
+    cte                            shift and go to state 43
 
 state 32
 
-    (29) condition -> IF LPAREN . expresion RPAREN body ELSE body SCOLON
-    (30) condition -> IF LPAREN . expresion RPAREN body SCOLON
-    (24) expresion -> . exp x
-    (25) expresion -> . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (38) condition -> IF LPAREN . relexpr RPAREN body ELSE body SCOLON
+    (39) condition -> IF LPAREN . relexpr RPAREN body SCOLON
+    (34) relexpr -> . expr LT expr
+    (35) relexpr -> . expr GT expr
+    (36) relexpr -> . expr EQUALS expr
+    (37) relexpr -> . expr NE expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    expresion                      shift and go to state 50
-    exp                            shift and go to state 40
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    relexpr                        shift and go to state 47
+    expr                           shift and go to state 48
+    cte                            shift and go to state 43
 
 state 33
 
-    (23) cycle -> DO body . WHILE LPAREN expresion RPAREN SCOLON
+    (24) cycle -> DO body . WHILE LPAREN relexpr RPAREN SCOLON
 
-    WHILE           shift and go to state 51
+    WHILE           shift and go to state 49
 
 
 state 34
 
     (17) print -> COUT LPAREN . c m RPAREN SCOLON
-    (18) c -> . expresion
-    (19) c -> . CTESTRING
-    (24) expresion -> . exp x
-    (25) expresion -> . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (18) c -> . expr
+    (19) c -> . relexpr
+    (20) c -> . CTESTRING
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (34) relexpr -> . expr LT expr
+    (35) relexpr -> . expr GT expr
+    (36) relexpr -> . expr EQUALS expr
+    (37) relexpr -> . expr NE expr
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    CTESTRING       shift and go to state 54
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    CTESTRING       shift and go to state 53
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    c                              shift and go to state 52
-    expresion                      shift and go to state 53
-    exp                            shift and go to state 40
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    c                              shift and go to state 50
+    expr                           shift and go to state 51
+    relexpr                        shift and go to state 52
+    cte                            shift and go to state 43
 
 state 35
 
     (4) typed_vars -> vars_list COLON type . SCOLON typed_vars
 
-    SCOLON          shift and go to state 55
+    SCOLON          shift and go to state 54
 
 
 state 36
@@ -558,579 +550,568 @@ state 38
 
 state 39
 
-    (22) assign -> ID EQUALS expresion . SCOLON
+    (31) expr -> ID .
 
-    SCOLON          shift and go to state 56
+    SCOLON          reduce using rule 31 (expr -> ID .)
+    PLUS            reduce using rule 31 (expr -> ID .)
+    MINUS           reduce using rule 31 (expr -> ID .)
+    TIMES           reduce using rule 31 (expr -> ID .)
+    DIVIDE          reduce using rule 31 (expr -> ID .)
+    LT              reduce using rule 31 (expr -> ID .)
+    GT              reduce using rule 31 (expr -> ID .)
+    EQUALS          reduce using rule 31 (expr -> ID .)
+    NE              reduce using rule 31 (expr -> ID .)
+    COMMA           reduce using rule 31 (expr -> ID .)
+    RPAREN          reduce using rule 31 (expr -> ID .)
 
 
 state 40
 
-    (24) expresion -> exp . x
-    (25) expresion -> exp .
-    (26) x -> . GT exp
-    (27) x -> . LT exp
-    (28) x -> . NE exp
+    (23) assign -> ID EQUALS expr . SCOLON
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    SCOLON          reduce using rule 25 (expresion -> exp .)
-    RPAREN          reduce using rule 25 (expresion -> exp .)
-    COMMA           reduce using rule 25 (expresion -> exp .)
-    GT              shift and go to state 58
-    LT              shift and go to state 59
-    NE              shift and go to state 60
+    SCOLON          shift and go to state 55
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
-    x                              shift and go to state 57
 
 state 41
 
-    (38) exp -> termino . z
-    (39) z -> . PLUS exp
-    (40) z -> . MINUS exp
-    (41) z -> . empty
-    (46) empty -> .
+    (29) expr -> INTEGER .
 
-    PLUS            shift and go to state 62
-    MINUS           shift and go to state 63
-    GT              reduce using rule 46 (empty -> .)
-    LT              reduce using rule 46 (empty -> .)
-    NE              reduce using rule 46 (empty -> .)
-    SCOLON          reduce using rule 46 (empty -> .)
-    RPAREN          reduce using rule 46 (empty -> .)
-    COMMA           reduce using rule 46 (empty -> .)
+    SCOLON          reduce using rule 29 (expr -> INTEGER .)
+    PLUS            reduce using rule 29 (expr -> INTEGER .)
+    MINUS           reduce using rule 29 (expr -> INTEGER .)
+    TIMES           reduce using rule 29 (expr -> INTEGER .)
+    DIVIDE          reduce using rule 29 (expr -> INTEGER .)
+    LT              reduce using rule 29 (expr -> INTEGER .)
+    GT              reduce using rule 29 (expr -> INTEGER .)
+    EQUALS          reduce using rule 29 (expr -> INTEGER .)
+    NE              reduce using rule 29 (expr -> INTEGER .)
+    COMMA           reduce using rule 29 (expr -> INTEGER .)
+    RPAREN          reduce using rule 29 (expr -> INTEGER .)
 
-    z                              shift and go to state 61
-    empty                          shift and go to state 64
 
 state 42
 
-    (42) termino -> factor . y
-    (43) y -> . TIMES termino
-    (44) y -> . DIVIDE termino
-    (45) y -> . empty
-    (46) empty -> .
+    (30) expr -> FLOAT .
 
-    TIMES           shift and go to state 66
-    DIVIDE          shift and go to state 67
-    PLUS            reduce using rule 46 (empty -> .)
-    MINUS           reduce using rule 46 (empty -> .)
-    GT              reduce using rule 46 (empty -> .)
-    LT              reduce using rule 46 (empty -> .)
-    NE              reduce using rule 46 (empty -> .)
-    SCOLON          reduce using rule 46 (empty -> .)
-    RPAREN          reduce using rule 46 (empty -> .)
-    COMMA           reduce using rule 46 (empty -> .)
+    SCOLON          reduce using rule 30 (expr -> FLOAT .)
+    PLUS            reduce using rule 30 (expr -> FLOAT .)
+    MINUS           reduce using rule 30 (expr -> FLOAT .)
+    TIMES           reduce using rule 30 (expr -> FLOAT .)
+    DIVIDE          reduce using rule 30 (expr -> FLOAT .)
+    LT              reduce using rule 30 (expr -> FLOAT .)
+    GT              reduce using rule 30 (expr -> FLOAT .)
+    EQUALS          reduce using rule 30 (expr -> FLOAT .)
+    NE              reduce using rule 30 (expr -> FLOAT .)
+    COMMA           reduce using rule 30 (expr -> FLOAT .)
+    RPAREN          reduce using rule 30 (expr -> FLOAT .)
 
-    y                              shift and go to state 65
-    empty                          shift and go to state 68
 
 state 43
 
-    (33) factor -> LPAREN . expresion RPAREN
-    (24) expresion -> . exp x
-    (25) expresion -> . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (32) expr -> cte .
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    SCOLON          reduce using rule 32 (expr -> cte .)
+    PLUS            reduce using rule 32 (expr -> cte .)
+    MINUS           reduce using rule 32 (expr -> cte .)
+    TIMES           reduce using rule 32 (expr -> cte .)
+    DIVIDE          reduce using rule 32 (expr -> cte .)
+    LT              reduce using rule 32 (expr -> cte .)
+    GT              reduce using rule 32 (expr -> cte .)
+    EQUALS          reduce using rule 32 (expr -> cte .)
+    NE              reduce using rule 32 (expr -> cte .)
+    COMMA           reduce using rule 32 (expr -> cte .)
+    RPAREN          reduce using rule 32 (expr -> cte .)
 
-    expresion                      shift and go to state 69
-    exp                            shift and go to state 40
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
 
 state 44
 
-    (34) factor -> factor_op . ID
+    (33) expr -> LPAREN . expr RPAREN
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    ID              shift and go to state 70
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
+    expr                           shift and go to state 60
+    cte                            shift and go to state 43
 
 state 45
 
-    (35) factor -> cte .
+    (40) cte -> CTEINT .
 
-    TIMES           reduce using rule 35 (factor -> cte .)
-    DIVIDE          reduce using rule 35 (factor -> cte .)
-    PLUS            reduce using rule 35 (factor -> cte .)
-    MINUS           reduce using rule 35 (factor -> cte .)
-    GT              reduce using rule 35 (factor -> cte .)
-    LT              reduce using rule 35 (factor -> cte .)
-    NE              reduce using rule 35 (factor -> cte .)
-    SCOLON          reduce using rule 35 (factor -> cte .)
-    RPAREN          reduce using rule 35 (factor -> cte .)
-    COMMA           reduce using rule 35 (factor -> cte .)
+    SCOLON          reduce using rule 40 (cte -> CTEINT .)
+    PLUS            reduce using rule 40 (cte -> CTEINT .)
+    MINUS           reduce using rule 40 (cte -> CTEINT .)
+    TIMES           reduce using rule 40 (cte -> CTEINT .)
+    DIVIDE          reduce using rule 40 (cte -> CTEINT .)
+    LT              reduce using rule 40 (cte -> CTEINT .)
+    GT              reduce using rule 40 (cte -> CTEINT .)
+    EQUALS          reduce using rule 40 (cte -> CTEINT .)
+    NE              reduce using rule 40 (cte -> CTEINT .)
+    COMMA           reduce using rule 40 (cte -> CTEINT .)
+    RPAREN          reduce using rule 40 (cte -> CTEINT .)
 
 
 state 46
 
-    (36) factor_op -> PLUS .
+    (41) cte -> CTEFLOAT .
 
-    ID              reduce using rule 36 (factor_op -> PLUS .)
+    SCOLON          reduce using rule 41 (cte -> CTEFLOAT .)
+    PLUS            reduce using rule 41 (cte -> CTEFLOAT .)
+    MINUS           reduce using rule 41 (cte -> CTEFLOAT .)
+    TIMES           reduce using rule 41 (cte -> CTEFLOAT .)
+    DIVIDE          reduce using rule 41 (cte -> CTEFLOAT .)
+    LT              reduce using rule 41 (cte -> CTEFLOAT .)
+    GT              reduce using rule 41 (cte -> CTEFLOAT .)
+    EQUALS          reduce using rule 41 (cte -> CTEFLOAT .)
+    NE              reduce using rule 41 (cte -> CTEFLOAT .)
+    COMMA           reduce using rule 41 (cte -> CTEFLOAT .)
+    RPAREN          reduce using rule 41 (cte -> CTEFLOAT .)
 
 
 state 47
 
-    (37) factor_op -> MINUS .
+    (38) condition -> IF LPAREN relexpr . RPAREN body ELSE body SCOLON
+    (39) condition -> IF LPAREN relexpr . RPAREN body SCOLON
 
-    ID              reduce using rule 37 (factor_op -> MINUS .)
+    RPAREN          shift and go to state 61
 
 
 state 48
 
-    (31) cte -> CTEINT .
+    (34) relexpr -> expr . LT expr
+    (35) relexpr -> expr . GT expr
+    (36) relexpr -> expr . EQUALS expr
+    (37) relexpr -> expr . NE expr
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    TIMES           reduce using rule 31 (cte -> CTEINT .)
-    DIVIDE          reduce using rule 31 (cte -> CTEINT .)
-    PLUS            reduce using rule 31 (cte -> CTEINT .)
-    MINUS           reduce using rule 31 (cte -> CTEINT .)
-    GT              reduce using rule 31 (cte -> CTEINT .)
-    LT              reduce using rule 31 (cte -> CTEINT .)
-    NE              reduce using rule 31 (cte -> CTEINT .)
-    SCOLON          reduce using rule 31 (cte -> CTEINT .)
-    RPAREN          reduce using rule 31 (cte -> CTEINT .)
-    COMMA           reduce using rule 31 (cte -> CTEINT .)
+    LT              shift and go to state 62
+    GT              shift and go to state 63
+    EQUALS          shift and go to state 64
+    NE              shift and go to state 65
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
 
 state 49
 
-    (32) cte -> CTEFLOAT .
+    (24) cycle -> DO body WHILE . LPAREN relexpr RPAREN SCOLON
 
-    TIMES           reduce using rule 32 (cte -> CTEFLOAT .)
-    DIVIDE          reduce using rule 32 (cte -> CTEFLOAT .)
-    PLUS            reduce using rule 32 (cte -> CTEFLOAT .)
-    MINUS           reduce using rule 32 (cte -> CTEFLOAT .)
-    GT              reduce using rule 32 (cte -> CTEFLOAT .)
-    LT              reduce using rule 32 (cte -> CTEFLOAT .)
-    NE              reduce using rule 32 (cte -> CTEFLOAT .)
-    SCOLON          reduce using rule 32 (cte -> CTEFLOAT .)
-    RPAREN          reduce using rule 32 (cte -> CTEFLOAT .)
-    COMMA           reduce using rule 32 (cte -> CTEFLOAT .)
+    LPAREN          shift and go to state 66
 
 
 state 50
 
-    (29) condition -> IF LPAREN expresion . RPAREN body ELSE body SCOLON
-    (30) condition -> IF LPAREN expresion . RPAREN body SCOLON
+    (17) print -> COUT LPAREN c . m RPAREN SCOLON
+    (21) m -> . COMMA c m
+    (22) m -> . empty
+    (42) empty -> .
 
-    RPAREN          shift and go to state 71
+    COMMA           shift and go to state 68
+    RPAREN          reduce using rule 42 (empty -> .)
 
+    m                              shift and go to state 67
+    empty                          shift and go to state 69
 
 state 51
 
-    (23) cycle -> DO body WHILE . LPAREN expresion RPAREN SCOLON
+    (18) c -> expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
+    (34) relexpr -> expr . LT expr
+    (35) relexpr -> expr . GT expr
+    (36) relexpr -> expr . EQUALS expr
+    (37) relexpr -> expr . NE expr
 
-    LPAREN          shift and go to state 72
+    COMMA           reduce using rule 18 (c -> expr .)
+    RPAREN          reduce using rule 18 (c -> expr .)
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
+    LT              shift and go to state 62
+    GT              shift and go to state 63
+    EQUALS          shift and go to state 64
+    NE              shift and go to state 65
 
 
 state 52
 
-    (17) print -> COUT LPAREN c . m RPAREN SCOLON
-    (20) m -> . COMMA c m
-    (21) m -> . empty
-    (46) empty -> .
+    (19) c -> relexpr .
 
-    COMMA           shift and go to state 74
-    RPAREN          reduce using rule 46 (empty -> .)
+    COMMA           reduce using rule 19 (c -> relexpr .)
+    RPAREN          reduce using rule 19 (c -> relexpr .)
 
-    m                              shift and go to state 73
-    empty                          shift and go to state 75
 
 state 53
 
-    (18) c -> expresion .
+    (20) c -> CTESTRING .
 
-    COMMA           reduce using rule 18 (c -> expresion .)
-    RPAREN          reduce using rule 18 (c -> expresion .)
+    COMMA           reduce using rule 20 (c -> CTESTRING .)
+    RPAREN          reduce using rule 20 (c -> CTESTRING .)
 
 
 state 54
-
-    (19) c -> CTESTRING .
-
-    COMMA           reduce using rule 19 (c -> CTESTRING .)
-    RPAREN          reduce using rule 19 (c -> CTESTRING .)
-
-
-state 55
 
     (4) typed_vars -> vars_list COLON type SCOLON . typed_vars
     (4) typed_vars -> . vars_list COLON type SCOLON typed_vars
     (5) typed_vars -> . empty
     (6) vars_list -> . ID
     (7) vars_list -> . ID COMMA vars_list
-    (46) empty -> .
+    (42) empty -> .
 
     ID              shift and go to state 13
-    VAR             reduce using rule 46 (empty -> .)
-    LBRACE          reduce using rule 46 (empty -> .)
+    VAR             reduce using rule 42 (empty -> .)
+    LBRACE          reduce using rule 42 (empty -> .)
 
     vars_list                      shift and go to state 11
-    typed_vars                     shift and go to state 76
+    typed_vars                     shift and go to state 70
     empty                          shift and go to state 12
+
+state 55
+
+    (23) assign -> ID EQUALS expr SCOLON .
+
+    ID              reduce using rule 23 (assign -> ID EQUALS expr SCOLON .)
+    IF              reduce using rule 23 (assign -> ID EQUALS expr SCOLON .)
+    DO              reduce using rule 23 (assign -> ID EQUALS expr SCOLON .)
+    COUT            reduce using rule 23 (assign -> ID EQUALS expr SCOLON .)
+    RBRACE          reduce using rule 23 (assign -> ID EQUALS expr SCOLON .)
+
 
 state 56
 
-    (22) assign -> ID EQUALS expresion SCOLON .
+    (25) expr -> expr PLUS . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    ID              reduce using rule 22 (assign -> ID EQUALS expresion SCOLON .)
-    IF              reduce using rule 22 (assign -> ID EQUALS expresion SCOLON .)
-    DO              reduce using rule 22 (assign -> ID EQUALS expresion SCOLON .)
-    COUT            reduce using rule 22 (assign -> ID EQUALS expresion SCOLON .)
-    RBRACE          reduce using rule 22 (assign -> ID EQUALS expresion SCOLON .)
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
+    expr                           shift and go to state 71
+    cte                            shift and go to state 43
 
 state 57
 
-    (24) expresion -> exp x .
+    (26) expr -> expr MINUS . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    SCOLON          reduce using rule 24 (expresion -> exp x .)
-    RPAREN          reduce using rule 24 (expresion -> exp x .)
-    COMMA           reduce using rule 24 (expresion -> exp x .)
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
+    expr                           shift and go to state 72
+    cte                            shift and go to state 43
 
 state 58
 
-    (26) x -> GT . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (27) expr -> expr TIMES . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    exp                            shift and go to state 77
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    expr                           shift and go to state 73
+    cte                            shift and go to state 43
 
 state 59
 
-    (27) x -> LT . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (28) expr -> expr DIVIDE . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    exp                            shift and go to state 78
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    expr                           shift and go to state 74
+    cte                            shift and go to state 43
 
 state 60
 
-    (28) x -> NE . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (33) expr -> LPAREN expr . RPAREN
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    RPAREN          shift and go to state 75
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
-    exp                            shift and go to state 79
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
 
 state 61
 
-    (38) exp -> termino z .
-
-    GT              reduce using rule 38 (exp -> termino z .)
-    LT              reduce using rule 38 (exp -> termino z .)
-    NE              reduce using rule 38 (exp -> termino z .)
-    SCOLON          reduce using rule 38 (exp -> termino z .)
-    RPAREN          reduce using rule 38 (exp -> termino z .)
-    COMMA           reduce using rule 38 (exp -> termino z .)
-
-
-state 62
-
-    (39) z -> PLUS . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
-
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
-
-    exp                            shift and go to state 80
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
-
-state 63
-
-    (40) z -> MINUS . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
-
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
-
-    exp                            shift and go to state 81
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
-
-state 64
-
-    (41) z -> empty .
-
-    GT              reduce using rule 41 (z -> empty .)
-    LT              reduce using rule 41 (z -> empty .)
-    NE              reduce using rule 41 (z -> empty .)
-    SCOLON          reduce using rule 41 (z -> empty .)
-    RPAREN          reduce using rule 41 (z -> empty .)
-    COMMA           reduce using rule 41 (z -> empty .)
-
-
-state 65
-
-    (42) termino -> factor y .
-
-    PLUS            reduce using rule 42 (termino -> factor y .)
-    MINUS           reduce using rule 42 (termino -> factor y .)
-    GT              reduce using rule 42 (termino -> factor y .)
-    LT              reduce using rule 42 (termino -> factor y .)
-    NE              reduce using rule 42 (termino -> factor y .)
-    SCOLON          reduce using rule 42 (termino -> factor y .)
-    RPAREN          reduce using rule 42 (termino -> factor y .)
-    COMMA           reduce using rule 42 (termino -> factor y .)
-
-
-state 66
-
-    (43) y -> TIMES . termino
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
-
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
-
-    termino                        shift and go to state 82
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
-
-state 67
-
-    (44) y -> DIVIDE . termino
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
-
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
-
-    termino                        shift and go to state 83
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
-
-state 68
-
-    (45) y -> empty .
-
-    PLUS            reduce using rule 45 (y -> empty .)
-    MINUS           reduce using rule 45 (y -> empty .)
-    GT              reduce using rule 45 (y -> empty .)
-    LT              reduce using rule 45 (y -> empty .)
-    NE              reduce using rule 45 (y -> empty .)
-    SCOLON          reduce using rule 45 (y -> empty .)
-    RPAREN          reduce using rule 45 (y -> empty .)
-    COMMA           reduce using rule 45 (y -> empty .)
-
-
-state 69
-
-    (33) factor -> LPAREN expresion . RPAREN
-
-    RPAREN          shift and go to state 84
-
-
-state 70
-
-    (34) factor -> factor_op ID .
-
-    TIMES           reduce using rule 34 (factor -> factor_op ID .)
-    DIVIDE          reduce using rule 34 (factor -> factor_op ID .)
-    PLUS            reduce using rule 34 (factor -> factor_op ID .)
-    MINUS           reduce using rule 34 (factor -> factor_op ID .)
-    GT              reduce using rule 34 (factor -> factor_op ID .)
-    LT              reduce using rule 34 (factor -> factor_op ID .)
-    NE              reduce using rule 34 (factor -> factor_op ID .)
-    SCOLON          reduce using rule 34 (factor -> factor_op ID .)
-    RPAREN          reduce using rule 34 (factor -> factor_op ID .)
-    COMMA           reduce using rule 34 (factor -> factor_op ID .)
-
-
-state 71
-
-    (29) condition -> IF LPAREN expresion RPAREN . body ELSE body SCOLON
-    (30) condition -> IF LPAREN expresion RPAREN . body SCOLON
+    (38) condition -> IF LPAREN relexpr RPAREN . body ELSE body SCOLON
+    (39) condition -> IF LPAREN relexpr RPAREN . body SCOLON
     (10) body -> . LBRACE s RBRACE
 
     LBRACE          shift and go to state 9
 
-    body                           shift and go to state 85
+    body                           shift and go to state 76
 
-state 72
+state 62
 
-    (23) cycle -> DO body WHILE LPAREN . expresion RPAREN SCOLON
-    (24) expresion -> . exp x
-    (25) expresion -> . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (34) relexpr -> expr LT . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    expresion                      shift and go to state 86
-    exp                            shift and go to state 40
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    expr                           shift and go to state 77
+    cte                            shift and go to state 43
 
-state 73
+state 63
+
+    (35) relexpr -> expr GT . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
+
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
+
+    expr                           shift and go to state 78
+    cte                            shift and go to state 43
+
+state 64
+
+    (36) relexpr -> expr EQUALS . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
+
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
+
+    expr                           shift and go to state 79
+    cte                            shift and go to state 43
+
+state 65
+
+    (37) relexpr -> expr NE . expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
+
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
+
+    expr                           shift and go to state 80
+    cte                            shift and go to state 43
+
+state 66
+
+    (24) cycle -> DO body WHILE LPAREN . relexpr RPAREN SCOLON
+    (34) relexpr -> . expr LT expr
+    (35) relexpr -> . expr GT expr
+    (36) relexpr -> . expr EQUALS expr
+    (37) relexpr -> . expr NE expr
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
+
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
+
+    relexpr                        shift and go to state 81
+    expr                           shift and go to state 48
+    cte                            shift and go to state 43
+
+state 67
 
     (17) print -> COUT LPAREN c m . RPAREN SCOLON
 
-    RPAREN          shift and go to state 87
+    RPAREN          shift and go to state 82
 
 
-state 74
+state 68
 
-    (20) m -> COMMA . c m
-    (18) c -> . expresion
-    (19) c -> . CTESTRING
-    (24) expresion -> . exp x
-    (25) expresion -> . exp
-    (38) exp -> . termino z
-    (42) termino -> . factor y
-    (33) factor -> . LPAREN expresion RPAREN
-    (34) factor -> . factor_op ID
-    (35) factor -> . cte
-    (36) factor_op -> . PLUS
-    (37) factor_op -> . MINUS
-    (31) cte -> . CTEINT
-    (32) cte -> . CTEFLOAT
+    (21) m -> COMMA . c m
+    (18) c -> . expr
+    (19) c -> . relexpr
+    (20) c -> . CTESTRING
+    (25) expr -> . expr PLUS expr
+    (26) expr -> . expr MINUS expr
+    (27) expr -> . expr TIMES expr
+    (28) expr -> . expr DIVIDE expr
+    (29) expr -> . INTEGER
+    (30) expr -> . FLOAT
+    (31) expr -> . ID
+    (32) expr -> . cte
+    (33) expr -> . LPAREN expr RPAREN
+    (34) relexpr -> . expr LT expr
+    (35) relexpr -> . expr GT expr
+    (36) relexpr -> . expr EQUALS expr
+    (37) relexpr -> . expr NE expr
+    (40) cte -> . CTEINT
+    (41) cte -> . CTEFLOAT
 
-    CTESTRING       shift and go to state 54
-    LPAREN          shift and go to state 43
-    PLUS            shift and go to state 46
-    MINUS           shift and go to state 47
-    CTEINT          shift and go to state 48
-    CTEFLOAT        shift and go to state 49
+    CTESTRING       shift and go to state 53
+    INTEGER         shift and go to state 41
+    FLOAT           shift and go to state 42
+    ID              shift and go to state 39
+    LPAREN          shift and go to state 44
+    CTEINT          shift and go to state 45
+    CTEFLOAT        shift and go to state 46
 
-    c                              shift and go to state 88
-    expresion                      shift and go to state 53
-    exp                            shift and go to state 40
-    termino                        shift and go to state 41
-    factor                         shift and go to state 42
-    factor_op                      shift and go to state 44
-    cte                            shift and go to state 45
+    c                              shift and go to state 83
+    expr                           shift and go to state 51
+    relexpr                        shift and go to state 52
+    cte                            shift and go to state 43
 
-state 75
+state 69
 
-    (21) m -> empty .
+    (22) m -> empty .
 
-    RPAREN          reduce using rule 21 (m -> empty .)
+    RPAREN          reduce using rule 22 (m -> empty .)
 
 
-state 76
+state 70
 
     (4) typed_vars -> vars_list COLON type SCOLON typed_vars .
 
@@ -1138,165 +1119,255 @@ state 76
     LBRACE          reduce using rule 4 (typed_vars -> vars_list COLON type SCOLON typed_vars .)
 
 
+state 71
+
+    (25) expr -> expr PLUS expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
+
+    SCOLON          reduce using rule 25 (expr -> expr PLUS expr .)
+    PLUS            reduce using rule 25 (expr -> expr PLUS expr .)
+    MINUS           reduce using rule 25 (expr -> expr PLUS expr .)
+    LT              reduce using rule 25 (expr -> expr PLUS expr .)
+    GT              reduce using rule 25 (expr -> expr PLUS expr .)
+    EQUALS          reduce using rule 25 (expr -> expr PLUS expr .)
+    NE              reduce using rule 25 (expr -> expr PLUS expr .)
+    COMMA           reduce using rule 25 (expr -> expr PLUS expr .)
+    RPAREN          reduce using rule 25 (expr -> expr PLUS expr .)
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
+
+  ! TIMES           [ reduce using rule 25 (expr -> expr PLUS expr .) ]
+  ! DIVIDE          [ reduce using rule 25 (expr -> expr PLUS expr .) ]
+  ! PLUS            [ shift and go to state 56 ]
+  ! MINUS           [ shift and go to state 57 ]
+
+
+state 72
+
+    (26) expr -> expr MINUS expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
+
+    SCOLON          reduce using rule 26 (expr -> expr MINUS expr .)
+    PLUS            reduce using rule 26 (expr -> expr MINUS expr .)
+    MINUS           reduce using rule 26 (expr -> expr MINUS expr .)
+    LT              reduce using rule 26 (expr -> expr MINUS expr .)
+    GT              reduce using rule 26 (expr -> expr MINUS expr .)
+    EQUALS          reduce using rule 26 (expr -> expr MINUS expr .)
+    NE              reduce using rule 26 (expr -> expr MINUS expr .)
+    COMMA           reduce using rule 26 (expr -> expr MINUS expr .)
+    RPAREN          reduce using rule 26 (expr -> expr MINUS expr .)
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
+
+  ! TIMES           [ reduce using rule 26 (expr -> expr MINUS expr .) ]
+  ! DIVIDE          [ reduce using rule 26 (expr -> expr MINUS expr .) ]
+  ! PLUS            [ shift and go to state 56 ]
+  ! MINUS           [ shift and go to state 57 ]
+
+
+state 73
+
+    (27) expr -> expr TIMES expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
+
+    SCOLON          reduce using rule 27 (expr -> expr TIMES expr .)
+    PLUS            reduce using rule 27 (expr -> expr TIMES expr .)
+    MINUS           reduce using rule 27 (expr -> expr TIMES expr .)
+    TIMES           reduce using rule 27 (expr -> expr TIMES expr .)
+    DIVIDE          reduce using rule 27 (expr -> expr TIMES expr .)
+    LT              reduce using rule 27 (expr -> expr TIMES expr .)
+    GT              reduce using rule 27 (expr -> expr TIMES expr .)
+    EQUALS          reduce using rule 27 (expr -> expr TIMES expr .)
+    NE              reduce using rule 27 (expr -> expr TIMES expr .)
+    COMMA           reduce using rule 27 (expr -> expr TIMES expr .)
+    RPAREN          reduce using rule 27 (expr -> expr TIMES expr .)
+
+  ! PLUS            [ shift and go to state 56 ]
+  ! MINUS           [ shift and go to state 57 ]
+  ! TIMES           [ shift and go to state 58 ]
+  ! DIVIDE          [ shift and go to state 59 ]
+
+
+state 74
+
+    (28) expr -> expr DIVIDE expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
+
+    SCOLON          reduce using rule 28 (expr -> expr DIVIDE expr .)
+    PLUS            reduce using rule 28 (expr -> expr DIVIDE expr .)
+    MINUS           reduce using rule 28 (expr -> expr DIVIDE expr .)
+    TIMES           reduce using rule 28 (expr -> expr DIVIDE expr .)
+    DIVIDE          reduce using rule 28 (expr -> expr DIVIDE expr .)
+    LT              reduce using rule 28 (expr -> expr DIVIDE expr .)
+    GT              reduce using rule 28 (expr -> expr DIVIDE expr .)
+    EQUALS          reduce using rule 28 (expr -> expr DIVIDE expr .)
+    NE              reduce using rule 28 (expr -> expr DIVIDE expr .)
+    COMMA           reduce using rule 28 (expr -> expr DIVIDE expr .)
+    RPAREN          reduce using rule 28 (expr -> expr DIVIDE expr .)
+
+  ! PLUS            [ shift and go to state 56 ]
+  ! MINUS           [ shift and go to state 57 ]
+  ! TIMES           [ shift and go to state 58 ]
+  ! DIVIDE          [ shift and go to state 59 ]
+
+
+state 75
+
+    (33) expr -> LPAREN expr RPAREN .
+
+    SCOLON          reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    PLUS            reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    MINUS           reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    TIMES           reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    DIVIDE          reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    LT              reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    GT              reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    EQUALS          reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    NE              reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    COMMA           reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+    RPAREN          reduce using rule 33 (expr -> LPAREN expr RPAREN .)
+
+
+state 76
+
+    (38) condition -> IF LPAREN relexpr RPAREN body . ELSE body SCOLON
+    (39) condition -> IF LPAREN relexpr RPAREN body . SCOLON
+
+    ELSE            shift and go to state 84
+    SCOLON          shift and go to state 85
+
+
 state 77
 
-    (26) x -> GT exp .
+    (34) relexpr -> expr LT expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    SCOLON          reduce using rule 26 (x -> GT exp .)
-    RPAREN          reduce using rule 26 (x -> GT exp .)
-    COMMA           reduce using rule 26 (x -> GT exp .)
+    RPAREN          reduce using rule 34 (relexpr -> expr LT expr .)
+    COMMA           reduce using rule 34 (relexpr -> expr LT expr .)
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
 
 state 78
 
-    (27) x -> LT exp .
+    (35) relexpr -> expr GT expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    SCOLON          reduce using rule 27 (x -> LT exp .)
-    RPAREN          reduce using rule 27 (x -> LT exp .)
-    COMMA           reduce using rule 27 (x -> LT exp .)
+    RPAREN          reduce using rule 35 (relexpr -> expr GT expr .)
+    COMMA           reduce using rule 35 (relexpr -> expr GT expr .)
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
 
 state 79
 
-    (28) x -> NE exp .
+    (36) relexpr -> expr EQUALS expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    SCOLON          reduce using rule 28 (x -> NE exp .)
-    RPAREN          reduce using rule 28 (x -> NE exp .)
-    COMMA           reduce using rule 28 (x -> NE exp .)
+    RPAREN          reduce using rule 36 (relexpr -> expr EQUALS expr .)
+    COMMA           reduce using rule 36 (relexpr -> expr EQUALS expr .)
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
 
 state 80
 
-    (39) z -> PLUS exp .
+    (37) relexpr -> expr NE expr .
+    (25) expr -> expr . PLUS expr
+    (26) expr -> expr . MINUS expr
+    (27) expr -> expr . TIMES expr
+    (28) expr -> expr . DIVIDE expr
 
-    GT              reduce using rule 39 (z -> PLUS exp .)
-    LT              reduce using rule 39 (z -> PLUS exp .)
-    NE              reduce using rule 39 (z -> PLUS exp .)
-    SCOLON          reduce using rule 39 (z -> PLUS exp .)
-    RPAREN          reduce using rule 39 (z -> PLUS exp .)
-    COMMA           reduce using rule 39 (z -> PLUS exp .)
+    RPAREN          reduce using rule 37 (relexpr -> expr NE expr .)
+    COMMA           reduce using rule 37 (relexpr -> expr NE expr .)
+    PLUS            shift and go to state 56
+    MINUS           shift and go to state 57
+    TIMES           shift and go to state 58
+    DIVIDE          shift and go to state 59
 
 
 state 81
 
-    (40) z -> MINUS exp .
+    (24) cycle -> DO body WHILE LPAREN relexpr . RPAREN SCOLON
 
-    GT              reduce using rule 40 (z -> MINUS exp .)
-    LT              reduce using rule 40 (z -> MINUS exp .)
-    NE              reduce using rule 40 (z -> MINUS exp .)
-    SCOLON          reduce using rule 40 (z -> MINUS exp .)
-    RPAREN          reduce using rule 40 (z -> MINUS exp .)
-    COMMA           reduce using rule 40 (z -> MINUS exp .)
+    RPAREN          shift and go to state 86
 
 
 state 82
 
-    (43) y -> TIMES termino .
+    (17) print -> COUT LPAREN c m RPAREN . SCOLON
 
-    PLUS            reduce using rule 43 (y -> TIMES termino .)
-    MINUS           reduce using rule 43 (y -> TIMES termino .)
-    GT              reduce using rule 43 (y -> TIMES termino .)
-    LT              reduce using rule 43 (y -> TIMES termino .)
-    NE              reduce using rule 43 (y -> TIMES termino .)
-    SCOLON          reduce using rule 43 (y -> TIMES termino .)
-    RPAREN          reduce using rule 43 (y -> TIMES termino .)
-    COMMA           reduce using rule 43 (y -> TIMES termino .)
+    SCOLON          shift and go to state 87
 
 
 state 83
 
-    (44) y -> DIVIDE termino .
+    (21) m -> COMMA c . m
+    (21) m -> . COMMA c m
+    (22) m -> . empty
+    (42) empty -> .
 
-    PLUS            reduce using rule 44 (y -> DIVIDE termino .)
-    MINUS           reduce using rule 44 (y -> DIVIDE termino .)
-    GT              reduce using rule 44 (y -> DIVIDE termino .)
-    LT              reduce using rule 44 (y -> DIVIDE termino .)
-    NE              reduce using rule 44 (y -> DIVIDE termino .)
-    SCOLON          reduce using rule 44 (y -> DIVIDE termino .)
-    RPAREN          reduce using rule 44 (y -> DIVIDE termino .)
-    COMMA           reduce using rule 44 (y -> DIVIDE termino .)
+    COMMA           shift and go to state 68
+    RPAREN          reduce using rule 42 (empty -> .)
 
+    m                              shift and go to state 88
+    empty                          shift and go to state 69
 
 state 84
 
-    (33) factor -> LPAREN expresion RPAREN .
-
-    TIMES           reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    DIVIDE          reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    PLUS            reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    MINUS           reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    GT              reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    LT              reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    NE              reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    SCOLON          reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    RPAREN          reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-    COMMA           reduce using rule 33 (factor -> LPAREN expresion RPAREN .)
-
-
-state 85
-
-    (29) condition -> IF LPAREN expresion RPAREN body . ELSE body SCOLON
-    (30) condition -> IF LPAREN expresion RPAREN body . SCOLON
-
-    ELSE            shift and go to state 89
-    SCOLON          shift and go to state 90
-
-
-state 86
-
-    (23) cycle -> DO body WHILE LPAREN expresion . RPAREN SCOLON
-
-    RPAREN          shift and go to state 91
-
-
-state 87
-
-    (17) print -> COUT LPAREN c m RPAREN . SCOLON
-
-    SCOLON          shift and go to state 92
-
-
-state 88
-
-    (20) m -> COMMA c . m
-    (20) m -> . COMMA c m
-    (21) m -> . empty
-    (46) empty -> .
-
-    COMMA           shift and go to state 74
-    RPAREN          reduce using rule 46 (empty -> .)
-
-    m                              shift and go to state 93
-    empty                          shift and go to state 75
-
-state 89
-
-    (29) condition -> IF LPAREN expresion RPAREN body ELSE . body SCOLON
+    (38) condition -> IF LPAREN relexpr RPAREN body ELSE . body SCOLON
     (10) body -> . LBRACE s RBRACE
 
     LBRACE          shift and go to state 9
 
-    body                           shift and go to state 94
+    body                           shift and go to state 89
 
-state 90
+state 85
 
-    (30) condition -> IF LPAREN expresion RPAREN body SCOLON .
+    (39) condition -> IF LPAREN relexpr RPAREN body SCOLON .
 
-    ID              reduce using rule 30 (condition -> IF LPAREN expresion RPAREN body SCOLON .)
-    IF              reduce using rule 30 (condition -> IF LPAREN expresion RPAREN body SCOLON .)
-    DO              reduce using rule 30 (condition -> IF LPAREN expresion RPAREN body SCOLON .)
-    COUT            reduce using rule 30 (condition -> IF LPAREN expresion RPAREN body SCOLON .)
-    RBRACE          reduce using rule 30 (condition -> IF LPAREN expresion RPAREN body SCOLON .)
-
-
-state 91
-
-    (23) cycle -> DO body WHILE LPAREN expresion RPAREN . SCOLON
-
-    SCOLON          shift and go to state 95
+    ID              reduce using rule 39 (condition -> IF LPAREN relexpr RPAREN body SCOLON .)
+    IF              reduce using rule 39 (condition -> IF LPAREN relexpr RPAREN body SCOLON .)
+    DO              reduce using rule 39 (condition -> IF LPAREN relexpr RPAREN body SCOLON .)
+    COUT            reduce using rule 39 (condition -> IF LPAREN relexpr RPAREN body SCOLON .)
+    RBRACE          reduce using rule 39 (condition -> IF LPAREN relexpr RPAREN body SCOLON .)
 
 
-state 92
+state 86
+
+    (24) cycle -> DO body WHILE LPAREN relexpr RPAREN . SCOLON
+
+    SCOLON          shift and go to state 90
+
+
+state 87
 
     (17) print -> COUT LPAREN c m RPAREN SCOLON .
 
@@ -1307,38 +1378,38 @@ state 92
     RBRACE          reduce using rule 17 (print -> COUT LPAREN c m RPAREN SCOLON .)
 
 
-state 93
+state 88
 
-    (20) m -> COMMA c m .
+    (21) m -> COMMA c m .
 
-    RPAREN          reduce using rule 20 (m -> COMMA c m .)
-
-
-state 94
-
-    (29) condition -> IF LPAREN expresion RPAREN body ELSE body . SCOLON
-
-    SCOLON          shift and go to state 96
+    RPAREN          reduce using rule 21 (m -> COMMA c m .)
 
 
-state 95
+state 89
 
-    (23) cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON .
+    (38) condition -> IF LPAREN relexpr RPAREN body ELSE body . SCOLON
 
-    ID              reduce using rule 23 (cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON .)
-    IF              reduce using rule 23 (cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON .)
-    DO              reduce using rule 23 (cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON .)
-    COUT            reduce using rule 23 (cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON .)
-    RBRACE          reduce using rule 23 (cycle -> DO body WHILE LPAREN expresion RPAREN SCOLON .)
+    SCOLON          shift and go to state 91
 
 
-state 96
+state 90
 
-    (29) condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON .
+    (24) cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON .
 
-    ID              reduce using rule 29 (condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON .)
-    IF              reduce using rule 29 (condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON .)
-    DO              reduce using rule 29 (condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON .)
-    COUT            reduce using rule 29 (condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON .)
-    RBRACE          reduce using rule 29 (condition -> IF LPAREN expresion RPAREN body ELSE body SCOLON .)
+    ID              reduce using rule 24 (cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON .)
+    IF              reduce using rule 24 (cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON .)
+    DO              reduce using rule 24 (cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON .)
+    COUT            reduce using rule 24 (cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON .)
+    RBRACE          reduce using rule 24 (cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON .)
+
+
+state 91
+
+    (38) condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON .
+
+    ID              reduce using rule 38 (condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON .)
+    IF              reduce using rule 38 (condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON .)
+    DO              reduce using rule 38 (condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON .)
+    COUT            reduce using rule 38 (condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON .)
+    RBRACE          reduce using rule 38 (condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON .)
 

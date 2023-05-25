@@ -122,7 +122,8 @@ def p_print(p):
 
 def p_c(p):
     '''
-    c :  expresion
+    c :  expr
+      |  relexpr
       |  CTESTRING
     '''
     p[0] = None
@@ -136,7 +137,7 @@ def p_m(p):
 
 def p_assign(p):
     '''
-    assign :  ID EQUALS expresion SCOLON
+    assign :  ID EQUALS expr SCOLON
     '''
 
     if p[1] not in variableDict:
@@ -147,29 +148,59 @@ def p_assign(p):
 
 def p_cycle(p):
     '''
-    cycle :  DO body WHILE LPAREN expresion RPAREN SCOLON
+    cycle :  DO body WHILE LPAREN relexpr RPAREN SCOLON
     '''
     p[0] = None
 
-def p_expresion(p):
-    '''
-    expresion :  exp x
-              |  exp
-    '''
-    p[0] = None
+def p_expr_operations(p):
+    '''expr : expr PLUS expr
+            | expr MINUS expr
+            | expr TIMES expr
+            | expr DIVIDE expr'''
 
-def p_x(p):
-    '''
-    x : GT exp
-      | LT exp
-      | NE exp
-    '''
-    p[0] = None
+    p[0] = ('BINOP', p[2], p[1], p[3])
+
+
+def p_expr_number(p):
+    '''expr : INTEGER
+            | FLOAT'''
+    p[0] = ('NUM', eval(p[1]))
+
+
+def p_expr_variable(p):
+    '''expr : ID'''
+
+    if p[1] not in variableDict:
+        print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
+        raise SystemExit
+
+    p[0] = ('VAR', p[1])
+
+def p_expr_constant(p):
+    '''expr : cte'''
+    p[0] = ('CTEVAL', p[1])
+
+def p_expr_group(p):
+    '''expr : LPAREN expr RPAREN'''
+    p[0] = ('GROUP', p[2])
+
+
+# Relational expressions
+
+
+def p_relexpr(p):
+    '''relexpr : expr LT expr
+               | expr GT expr
+               | expr EQUALS expr
+               | expr NE expr'''
+    p[0] = ('RELOP', p[2], p[1], p[3])
+
+
 
 def p_condition(p):
     '''
-    condition : IF LPAREN expresion RPAREN body ELSE body SCOLON
-              | IF LPAREN expresion RPAREN body SCOLON
+    condition : IF LPAREN relexpr RPAREN body ELSE body SCOLON
+              | IF LPAREN relexpr RPAREN body SCOLON
     '''
     p[0] = None
 
@@ -178,49 +209,6 @@ def p_cte(p):
     '''
     cte : CTEINT
         | CTEFLOAT
-    '''
-    p[0] = None
-
-def p_factor(p):
-    '''
-    factor : LPAREN expresion RPAREN
-           | factor_op ID
-           | cte
-    '''
-    p[0] = None
-
-def p_factor_op(p):
-    '''
-    factor_op : PLUS
-              | MINUS
-    '''
-    p[0] = None
-
-def p_exp(p):
-    '''
-    exp : termino z
-    '''
-    p[0] = None
-
-def p_z(p):
-    '''
-    z : PLUS exp
-      | MINUS exp
-      | empty
-    '''
-    p[0] = None
-
-def p_termino(p):
-    '''
-    termino : factor y
-    '''
-    p[0] = None
-
-def p_y(p):
-    '''
-    y : TIMES termino
-      | DIVIDE termino
-      | empty
     '''
     p[0] = None
 
@@ -236,33 +224,12 @@ def p_error(p):
     else:
          print("Syntax error at EOF")
 
+def reset_variables():
+    global variableDict
+    variableDict = {}
+
 # Build the parser
 parser = yacc.yacc()
 
-# Parse an expression
-ast = parser.parse('''
-
-program PATITOS10;
-
-var X:int; Z:float;
-var J:float; K:float;
-{
-    X=1+1;
-
-    if (5 > 0) {
-        cout("6");
-    } else {
-        cout("5");
-    };
-
-    do {
-        cout("hey");
-    } while(5>6);
-
-}
-
-end
-
-''')
-print(variableDict)
+#print(variableDict)
 #print(ast)
