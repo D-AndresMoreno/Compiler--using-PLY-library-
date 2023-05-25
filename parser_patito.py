@@ -138,6 +138,11 @@ def p_assign(p):
     '''
     assign :  ID EQUALS expresion SCOLON
     '''
+
+    if p[1] not in variableDict:
+        print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
+        raise SystemExit
+
     p[0] = None
 
 def p_cycle(p):
