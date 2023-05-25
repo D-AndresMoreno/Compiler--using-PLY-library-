@@ -1,9 +1,5 @@
 from ply import *
 import lexer_patito
-import parser_patito
-
-lexer_patito = Lexer().get()
-parser = Parser().parse()
 
 tokens = lexer_patito.lex("""
 
@@ -28,4 +24,3 @@ var Y:float;
 
 """)
                    
-parser.parse(tokens)
