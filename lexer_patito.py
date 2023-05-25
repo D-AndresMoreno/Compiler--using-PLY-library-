@@ -60,7 +60,6 @@ t_CTESTRING = r'".*"'
 
 def t_error(t):
     print("Illegal character %s" % t.value[0])
-    print(t.value[1])
     t.lexer.skip(1)
 
 lex.lex(debug=0)

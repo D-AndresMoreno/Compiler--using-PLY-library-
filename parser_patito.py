@@ -9,6 +9,8 @@ precedence = (
     ('left', 'TIMES', 'DIVIDE'),
 )
 
+variableDict = {}
+
 # Write functions for each grammar rule which is
 # specified in the docstring.
 def p_programa(p):
@@ -27,28 +29,68 @@ def p_vars(p):
     vars : VAR typed_vars vars
          | empty
     '''
-    p[0] = None
+    
+    if len(p) == 2:
+        p[0] = None
+    else:
+        for i in range(1, len(p)):
+            if(p[i] == 'var'):
+                vars = p[i+1]
+                temp = ""
+                char_var = 0
+                while char_var < len(vars):
+                    if vars[char_var] == ':' and temp != "":
+
+                        if temp in variableDict:
+                                print("Error: DOBLE VARIABLE DECLARATION")
+                                raise SystemExit
+                        else:  
+                            if vars[char_var+1] == 'f':
+                                    variableDict[temp] = 'float'
+                                    char_var+=6
+                                    temp = ""
+                            else:
+                                variableDict[temp] = 'int'
+                                char_var+=4
+                                temp = ""
+                        
+
+                    if(vars[char_var] != ";" and vars[char_var] != ":"):
+                        temp += vars[char_var]
+                    char_var+=1
+       
+    
 
 def p_typed_vars(p):
     '''
     typed_vars : vars_list COLON type SCOLON typed_vars
                | empty
     '''
-    p[0] = None
+    
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = p[1]
+        for i in p:
+            if i != None and i!=p[0]:
+                p[0] += i
 
 def p_vars_list(p):
     '''
     vars_list : ID 
               | ID COMMA vars_list
     '''
-    p[0] = None
+
+    p[0] = p[1]
+
 
 def p_type(p):
     '''
     type : INTEGER
          | FLOAT
     '''
-    p[0] = None
+    
+    p[0] = p[1]
 
 def p_body(p):
     '''
@@ -185,7 +227,7 @@ def p_error(p):
     if p:
          print("Syntax error at token", p)
          # Just discard the token and tell the parser it's okay.
-         parser.errok()
+         #parser.errok()
     else:
          print("Syntax error at EOF")
 
@@ -197,8 +239,8 @@ ast = parser.parse('''
 
 program PATITOS10;
 
-var X:int; J:int;
-var Y:float;
+var X:int; Z:float;
+var J:float; K:float;
 {
     X=1+1;
 
@@ -217,5 +259,5 @@ var Y:float;
 end
 
 ''')
-
+print(variableDict)
 #print(ast)
