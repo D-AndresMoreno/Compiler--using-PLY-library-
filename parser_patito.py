@@ -1,5 +1,6 @@
 from ply import *
 import lexer_patito
+from queue import Queue
 
 tokens = lexer_patito.tokens
 
@@ -10,19 +11,17 @@ precedence = (
 )
 
 variableDict = {}
+# Initializing a queue
+listofinstructions = Queue()
 
-# Write functions for each grammar rule which is
-# specified in the docstring.
+
 def p_programa(p):
     '''
     programa : PROGRAM ID SCOLON vars body END
     '''
-    # p is a sequence that represents rule contents.
-    #
-    # expression : term PLUS term
-    #   p[0]     : p[1] p[2] p[3]
-    # 
-    p[0] = None
+    for i in p[5]:
+        print("\n", i)
+    p[0] = p[5]
 
 def p_vars(p):
     '''
@@ -94,46 +93,78 @@ def p_type(p):
 
 def p_body(p):
     '''
-    body : LBRACE s RBRACE
+    body : LBRACE listofstatements RBRACE
     '''
-    p[0] = None
+    #print("Body: " ,p[2])
+    global listofinstructions
+    listofinstructions.reverse()
+    p[0] = listofinstructions
+    listofinstructions = []
 
 def p_s(p):
     '''
-    s : statement s
-      | empty
+    listofstatements : statement listofstatements
+                     | empty
     '''
-    p[0] = None
+
+    global listofinstructions
+    if(len(p) > 2):
+        listofinstructions.append(p[1])
+    else:  
+        listofinstructions = []
+        
 
 def p_statement(p):
     '''
     statement : assign
-         | condition
-         | cycle
-         | print
+              | condition
+              | cycle
+              | print
     '''
-    p[0] = None
+    p[0] = p[1]
 
 def p_print(p):
     '''
-    print :  COUT LPAREN c m RPAREN SCOLON
+    print :  COUT LPAREN listedexpr RPAREN SCOLON
     '''
-    p[0] = None
+
+    p[0] = ("PRINT", p[3])
+
+def p_listedexpr(p):
+    '''
+    listedexpr :  c
+               |  c COMMA c m
+        
+    '''
+    global listexpr
+    listexpr.reverse()
+    #print(p[4])
+    if(len(p) > 2 ):
+        listexpr.insert(0, p[3])
+        listexpr.insert(0, p[1])
+        p[0] = listexpr
+        listexpr = []
+    else:
+        p[0] = p[1]   
 
 def p_c(p):
     '''
     c :  expr
       |  relexpr
       |  CTESTRING
-    '''
-    p[0] = None
 
+    '''
+    p[0] = (p[1])
+        
+listexpr = []
 def p_m(p):
     '''
     m :  COMMA c m
       |  empty
     '''
-    p[0] = None
+
+    if(len(p) > 2):
+        listexpr.append(p[2])
 
 def p_assign(p):
     '''
@@ -143,14 +174,15 @@ def p_assign(p):
     if p[1] not in variableDict:
         print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
         raise SystemExit
-
-    p[0] = None
+    
+    p[0] = (p[1], p[2], p[3])
 
 def p_cycle(p):
     '''
     cycle :  DO body WHILE LPAREN relexpr RPAREN SCOLON
     '''
-    p[0] = None
+    #.put(("CYCLE", p[2], p[5]))
+    p[0] = ("CYCLE", p[2], p[5])
 
 def p_expr_operations(p):
     '''expr : expr PLUS expr
@@ -159,14 +191,8 @@ def p_expr_operations(p):
             | expr DIVIDE expr'''
 
     p[0] = ('BINOP', p[2], p[1], p[3])
-
-
-def p_expr_number(p):
-    '''expr : INTEGER
-            | FLOAT'''
-    p[0] = ('NUM', eval(p[1]))
-
-
+    
+    
 def p_expr_variable(p):
     '''expr : ID'''
 
@@ -184,17 +210,16 @@ def p_expr_group(p):
     '''expr : LPAREN expr RPAREN'''
     p[0] = ('GROUP', p[2])
 
-
+    
 # Relational expressions
-
 
 def p_relexpr(p):
     '''relexpr : expr LT expr
                | expr GT expr
                | expr EQUALS expr
                | expr NE expr'''
+    
     p[0] = ('RELOP', p[2], p[1], p[3])
-
 
 
 def p_condition(p):
@@ -202,7 +227,10 @@ def p_condition(p):
     condition : IF LPAREN relexpr RPAREN body ELSE body SCOLON
               | IF LPAREN relexpr RPAREN body SCOLON
     '''
-    p[0] = None
+    if len(p) == 9:
+        p[0] = ("CONIFE", p[3], "GOTOT:",p[5], "GOTOF",p[7])
+    else:
+        p[0] = ("CONIF", p[3], "GOTOT:", p[5])
 
 
 def p_cte(p):
@@ -210,7 +238,7 @@ def p_cte(p):
     cte : CTEINT
         | CTEFLOAT
     '''
-    p[0] = None
+    p[0] = p[1]
 
 
 def p_empty(p):
@@ -232,4 +260,3 @@ def reset_variables():
 parser = yacc.yacc()
 
 #print(variableDict)
-#print(ast)

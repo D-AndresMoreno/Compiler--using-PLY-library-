@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftLTGTleftPLUSMINUSleftTIMESDIVIDECOLON COMMA COUT CTEFLOAT CTEINT CTESTRING DIVIDE DO ELSE END EQUALS FLOAT GT ID IF INTEGER LBRACE LPAREN LT MINUS NE PLUS PROGRAM RBRACE RPAREN SCOLON TIMES VAR WHILE\n    programa : PROGRAM ID SCOLON vars body END\n    \n    vars : VAR typed_vars vars\n         | empty\n    \n    typed_vars : vars_list COLON type SCOLON typed_vars\n               | empty\n    \n    vars_list : ID \n              | ID COMMA vars_list\n    \n    type : INTEGER\n         | FLOAT\n    \n    body : LBRACE s RBRACE\n    \n    s : statement s\n      | empty\n    \n    statement : assign\n         | condition\n         | cycle\n         | print\n    \n    print :  COUT LPAREN c m RPAREN SCOLON\n    \n    c :  expr\n      |  relexpr\n      |  CTESTRING\n    \n    m :  COMMA c m\n      |  empty\n    \n    assign :  ID EQUALS expr SCOLON\n    \n    cycle :  DO body WHILE LPAREN relexpr RPAREN SCOLON\n    expr : expr PLUS expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr DIVIDE exprexpr : INTEGER\n            | FLOATexpr : IDexpr : cteexpr : LPAREN expr RPARENrelexpr : expr LT expr\n               | expr GT expr\n               | expr EQUALS expr\n               | expr NE expr\n    condition : IF LPAREN relexpr RPAREN body ELSE body SCOLON\n              | IF LPAREN relexpr RPAREN body SCOLON\n    \n    cte : CTEINT\n        | CTEFLOAT\n    empty : '
+_lr_signature = 'leftLTGTleftPLUSMINUSleftTIMESDIVIDECOLON COMMA COUT CTEFLOAT CTEINT CTESTRING DIVIDE DO ELSE END EQUALS FLOAT GT ID IF INTEGER LBRACE LPAREN LT MINUS NE PLUS PROGRAM RBRACE RPAREN SCOLON TIMES VAR WHILE\n    programa : PROGRAM ID SCOLON vars body END\n    \n    vars : VAR typed_vars vars\n         | empty\n    \n    typed_vars : vars_list COLON type SCOLON typed_vars\n               | empty\n    \n    vars_list : ID \n              | ID COMMA vars_list\n    \n    type : INTEGER\n         | FLOAT\n    \n    body : LBRACE listofstatements RBRACE\n    \n    listofstatements : statement listofstatements\n                     | empty\n    \n    statement : assign\n              | condition\n              | cycle\n              | print\n    \n    print :  COUT LPAREN listedexpr RPAREN SCOLON\n    \n    listedexpr :  c\n               |  c COMMA c m\n        \n    \n    c :  expr\n      |  relexpr\n      |  CTESTRING\n\n    \n    m :  COMMA c m\n      |  empty\n    \n    assign :  ID EQUALS expr SCOLON\n    \n    cycle :  DO body WHILE LPAREN relexpr RPAREN SCOLON\n    expr : expr PLUS expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr DIVIDE exprexpr : IDexpr : cteexpr : LPAREN expr RPARENrelexpr : expr LT expr\n               | expr GT expr\n               | expr EQUALS expr\n               | expr NE expr\n    condition : IF LPAREN relexpr RPAREN body ELSE body SCOLON\n              | IF LPAREN relexpr RPAREN body SCOLON\n    \n    cte : CTEINT\n        | CTEFLOAT\n    empty : '
     
-_lr_action_items = {'PROGRAM':([0,],[2,]),'$end':([1,14,],[0,-1,]),'ID':([2,6,9,16,18,19,20,21,28,31,32,34,44,54,55,56,57,58,59,62,63,64,65,66,68,85,87,90,91,],[3,13,22,22,-13,-14,-15,-16,13,39,39,39,39,13,-23,39,39,39,39,39,39,39,39,39,39,-39,-17,-24,-38,]),'SCOLON':([3,29,35,36,37,39,40,41,42,43,45,46,71,72,73,74,75,76,82,86,89,],[4,-10,54,-8,-9,-31,55,-29,-30,-32,-40,-41,-25,-26,-27,-28,-33,85,87,90,91,]),'VAR':([4,6,10,12,54,70,],[6,-42,6,-5,-42,-4,]),'LBRACE':([4,5,6,7,10,12,24,26,54,61,70,84,],[-42,9,-42,-3,-42,-5,9,-2,-42,9,-4,9,]),'END':([8,29,],[14,-10,]),'RBRACE':([9,15,16,17,18,19,20,21,30,55,85,87,90,91,],[-42,29,-42,-12,-13,-14,-15,-16,-11,-23,-39,-17,-24,-38,]),'IF':([9,16,18,19,20,21,55,85,87,90,91,],[23,23,-13,-14,-15,-16,-23,-39,-17,-24,-38,]),'DO':([9,16,18,19,20,21,55,85,87,90,91,],[24,24,-13,-14,-15,-16,-23,-39,-17,-24,-38,]),'COUT':([9,16,18,19,20,21,55,85,87,90,91,],[25,25,-13,-14,-15,-16,-23,-39,-17,-24,-38,]),'COLON':([11,13,38,],[27,-6,-7,]),'COMMA':([13,39,41,42,43,45,46,50,51,52,53,71,72,73,74,75,77,78,79,80,83,],[28,-31,-29,-30,-32,-40,-41,68,-18,-19,-20,-25,-26,-27,-28,-33,-34,-35,-36,-37,68,]),'EQUALS':([22,39,41,42,43,45,46,48,51,71,72,73,74,75,],[31,-31,-29,-30,-32,-40,-41,64,64,-25,-26,-27,-28,-33,]),'LPAREN':([23,25,31,32,34,44,49,56,57,58,59,62,63,64,65,66,68,],[32,34,44,44,44,44,66,44,44,44,44,44,44,44,44,44,44,]),'INTEGER':([27,31,32,34,44,56,57,58,59,62,63,64,65,66,68,],[36,41,41,41,41,41,41,41,41,41,41,41,41,41,41,]),'FLOAT':([27,31,32,34,44,56,57,58,59,62,63,64,65,66,68,],[37,42,42,42,42,42,42,42,42,42,42,42,42,42,42,]),'WHILE':([29,33,],[-10,49,]),'ELSE':([29,76,],[-10,84,]),'CTEINT':([31,32,34,44,56,57,58,59,62,63,64,65,66,68,],[45,45,45,45,45,45,45,45,45,45,45,45,45,45,]),'CTEFLOAT':([31,32,34,44,56,57,58,59,62,63,64,65,66,68,],[46,46,46,46,46,46,46,46,46,46,46,46,46,46,]),'CTESTRING':([34,68,],[53,53,]),'PLUS':([39,40,41,42,43,45,46,48,51,60,71,72,73,74,75,77,78,79,80,],[-31,56,-29,-30,-32,-40,-41,56,56,56,-25,-26,-27,-28,-33,56,56,56,56,]),'MINUS':([39,40,41,42,43,45,46,48,51,60,71,72,73,74,75,77,78,79,80,],[-31,57,-29,-30,-32,-40,-41,57,57,57,-25,-26,-27,-28,-33,57,57,57,57,]),'TIMES':([39,40,41,42,43,45,46,48,51,60,71,72,73,74,75,77,78,79,80,],[-31,58,-29,-30,-32,-40,-41,58,58,58,58,58,-27,-28,-33,58,58,58,58,]),'DIVIDE':([39,40,41,42,43,45,46,48,51,60,71,72,73,74,75,77,78,79,80,],[-31,59,-29,-30,-32,-40,-41,59,59,59,59,59,-27,-28,-33,59,59,59,59,]),'LT':([39,41,42,43,45,46,48,51,71,72,73,74,75,],[-31,-29,-30,-32,-40,-41,62,62,-25,-26,-27,-28,-33,]),'GT':([39,41,42,43,45,46,48,51,71,72,73,74,75,],[-31,-29,-30,-32,-40,-41,63,63,-25,-26,-27,-28,-33,]),'NE':([39,41,42,43,45,46,48,51,71,72,73,74,75,],[-31,-29,-30,-32,-40,-41,65,65,-25,-26,-27,-28,-33,]),'RPAREN':([39,41,42,43,45,46,47,50,51,52,53,60,67,69,71,72,73,74,75,77,78,79,80,81,83,88,],[-31,-29,-30,-32,-40,-41,61,-42,-18,-19,-20,75,82,-22,-25,-26,-27,-28,-33,-34,-35,-36,-37,86,-42,-21,]),}
+_lr_action_items = {'PROGRAM':([0,],[2,]),'$end':([1,14,],[0,-1,]),'ID':([2,6,9,16,18,19,20,21,28,31,32,34,42,53,54,55,56,57,58,61,62,63,64,65,67,80,83,85,89,91,],[3,13,22,22,-13,-14,-15,-16,13,39,39,39,39,13,-25,39,39,39,39,39,39,39,39,39,39,-17,-39,39,-26,-38,]),'SCOLON':([3,29,35,36,37,39,40,41,43,44,66,69,70,71,72,73,74,84,88,],[4,-10,53,-8,-9,-31,54,-32,-40,-41,80,-27,-28,-29,-30,-33,83,89,91,]),'VAR':([4,6,10,12,53,68,],[6,-42,6,-5,-42,-4,]),'LBRACE':([4,5,6,7,10,12,24,26,53,60,68,82,],[-42,9,-42,-3,-42,-5,9,-2,-42,9,-4,9,]),'END':([8,29,],[14,-10,]),'RBRACE':([9,15,16,17,18,19,20,21,30,54,80,83,89,91,],[-42,29,-42,-12,-13,-14,-15,-16,-11,-25,-17,-39,-26,-38,]),'IF':([9,16,18,19,20,21,54,80,83,89,91,],[23,23,-13,-14,-15,-16,-25,-17,-39,-26,-38,]),'DO':([9,16,18,19,20,21,54,80,83,89,91,],[24,24,-13,-14,-15,-16,-25,-17,-39,-26,-38,]),'COUT':([9,16,18,19,20,21,54,80,83,89,91,],[25,25,-13,-14,-15,-16,-25,-17,-39,-26,-38,]),'COLON':([11,13,38,],[27,-6,-7,]),'COMMA':([13,39,41,43,44,49,50,51,52,69,70,71,72,73,75,76,77,78,81,90,],[28,-31,-32,-40,-41,67,-20,-21,-22,-27,-28,-29,-30,-33,-34,-35,-36,-37,85,85,]),'EQUALS':([22,39,41,43,44,46,50,69,70,71,72,73,],[31,-31,-32,-40,-41,63,63,-27,-28,-29,-30,-33,]),'LPAREN':([23,25,31,32,34,42,47,55,56,57,58,61,62,63,64,65,67,85,],[32,34,42,42,42,42,65,42,42,42,42,42,42,42,42,42,42,42,]),'INTEGER':([27,],[36,]),'FLOAT':([27,],[37,]),'WHILE':([29,33,],[-10,47,]),'ELSE':([29,74,],[-10,82,]),'CTEINT':([31,32,34,42,55,56,57,58,61,62,63,64,65,67,85,],[43,43,43,43,43,43,43,43,43,43,43,43,43,43,43,]),'CTEFLOAT':([31,32,34,42,55,56,57,58,61,62,63,64,65,67,85,],[44,44,44,44,44,44,44,44,44,44,44,44,44,44,44,]),'CTESTRING':([34,67,85,],[52,52,52,]),'PLUS':([39,40,41,43,44,46,50,59,69,70,71,72,73,75,76,77,78,],[-31,55,-32,-40,-41,55,55,55,-27,-28,-29,-30,-33,55,55,55,55,]),'MINUS':([39,40,41,43,44,46,50,59,69,70,71,72,73,75,76,77,78,],[-31,56,-32,-40,-41,56,56,56,-27,-28,-29,-30,-33,56,56,56,56,]),'TIMES':([39,40,41,43,44,46,50,59,69,70,71,72,73,75,76,77,78,],[-31,57,-32,-40,-41,57,57,57,57,57,-29,-30,-33,57,57,57,57,]),'DIVIDE':([39,40,41,43,44,46,50,59,69,70,71,72,73,75,76,77,78,],[-31,58,-32,-40,-41,58,58,58,58,58,-29,-30,-33,58,58,58,58,]),'LT':([39,41,43,44,46,50,69,70,71,72,73,],[-31,-32,-40,-41,61,61,-27,-28,-29,-30,-33,]),'GT':([39,41,43,44,46,50,69,70,71,72,73,],[-31,-32,-40,-41,62,62,-27,-28,-29,-30,-33,]),'NE':([39,41,43,44,46,50,69,70,71,72,73,],[-31,-32,-40,-41,64,64,-27,-28,-29,-30,-33,]),'RPAREN':([39,41,43,44,45,48,49,50,51,52,59,69,70,71,72,73,75,76,77,78,79,81,86,87,90,92,],[-31,-32,-40,-41,60,66,-18,-20,-21,-22,73,-27,-28,-29,-30,-33,-34,-35,-36,-37,84,-42,-19,-24,-42,-23,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'programa':([0,],[1,]),'vars':([4,10,],[5,26,]),'empty':([4,6,9,10,16,50,54,83,],[7,12,17,7,17,69,12,69,]),'body':([5,24,61,84,],[8,33,76,89,]),'typed_vars':([6,54,],[10,70,]),'vars_list':([6,28,54,],[11,38,11,]),'s':([9,16,],[15,30,]),'statement':([9,16,],[16,16,]),'assign':([9,16,],[18,18,]),'condition':([9,16,],[19,19,]),'cycle':([9,16,],[20,20,]),'print':([9,16,],[21,21,]),'type':([27,],[35,]),'expr':([31,32,34,44,56,57,58,59,62,63,64,65,66,68,],[40,48,51,60,71,72,73,74,77,78,79,80,48,51,]),'cte':([31,32,34,44,56,57,58,59,62,63,64,65,66,68,],[43,43,43,43,43,43,43,43,43,43,43,43,43,43,]),'relexpr':([32,34,66,68,],[47,52,81,52,]),'c':([34,68,],[50,83,]),'m':([50,83,],[67,88,]),}
+_lr_goto_items = {'programa':([0,],[1,]),'vars':([4,10,],[5,26,]),'empty':([4,6,9,10,16,53,81,90,],[7,12,17,7,17,12,87,87,]),'body':([5,24,60,82,],[8,33,74,88,]),'typed_vars':([6,53,],[10,68,]),'vars_list':([6,28,53,],[11,38,11,]),'listofstatements':([9,16,],[15,30,]),'statement':([9,16,],[16,16,]),'assign':([9,16,],[18,18,]),'condition':([9,16,],[19,19,]),'cycle':([9,16,],[20,20,]),'print':([9,16,],[21,21,]),'type':([27,],[35,]),'expr':([31,32,34,42,55,56,57,58,61,62,63,64,65,67,85,],[40,46,50,59,69,70,71,72,75,76,77,78,46,50,50,]),'cte':([31,32,34,42,55,56,57,58,61,62,63,64,65,67,85,],[41,41,41,41,41,41,41,41,41,41,41,41,41,41,41,]),'relexpr':([32,34,65,67,85,],[45,51,79,51,51,]),'listedexpr':([34,],[48,]),'c':([34,67,85,],[49,81,90,]),'m':([81,90,],[86,92,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,46 +27,46 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> programa","S'",1,None,None,None),
-  ('programa -> PROGRAM ID SCOLON vars body END','programa',6,'p_programa','parser_patito.py',18),
-  ('vars -> VAR typed_vars vars','vars',3,'p_vars','parser_patito.py',29),
-  ('vars -> empty','vars',1,'p_vars','parser_patito.py',30),
-  ('typed_vars -> vars_list COLON type SCOLON typed_vars','typed_vars',5,'p_typed_vars','parser_patito.py',66),
-  ('typed_vars -> empty','typed_vars',1,'p_typed_vars','parser_patito.py',67),
-  ('vars_list -> ID','vars_list',1,'p_vars_list','parser_patito.py',80),
-  ('vars_list -> ID COMMA vars_list','vars_list',3,'p_vars_list','parser_patito.py',81),
-  ('type -> INTEGER','type',1,'p_type','parser_patito.py',89),
-  ('type -> FLOAT','type',1,'p_type','parser_patito.py',90),
-  ('body -> LBRACE s RBRACE','body',3,'p_body','parser_patito.py',97),
-  ('s -> statement s','s',2,'p_s','parser_patito.py',103),
-  ('s -> empty','s',1,'p_s','parser_patito.py',104),
-  ('statement -> assign','statement',1,'p_statement','parser_patito.py',110),
-  ('statement -> condition','statement',1,'p_statement','parser_patito.py',111),
-  ('statement -> cycle','statement',1,'p_statement','parser_patito.py',112),
-  ('statement -> print','statement',1,'p_statement','parser_patito.py',113),
-  ('print -> COUT LPAREN c m RPAREN SCOLON','print',6,'p_print','parser_patito.py',119),
-  ('c -> expr','c',1,'p_c','parser_patito.py',125),
-  ('c -> relexpr','c',1,'p_c','parser_patito.py',126),
-  ('c -> CTESTRING','c',1,'p_c','parser_patito.py',127),
-  ('m -> COMMA c m','m',3,'p_m','parser_patito.py',133),
-  ('m -> empty','m',1,'p_m','parser_patito.py',134),
-  ('assign -> ID EQUALS expr SCOLON','assign',4,'p_assign','parser_patito.py',140),
-  ('cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON','cycle',7,'p_cycle','parser_patito.py',151),
-  ('expr -> expr PLUS expr','expr',3,'p_expr_operations','parser_patito.py',156),
-  ('expr -> expr MINUS expr','expr',3,'p_expr_operations','parser_patito.py',157),
-  ('expr -> expr TIMES expr','expr',3,'p_expr_operations','parser_patito.py',158),
-  ('expr -> expr DIVIDE expr','expr',3,'p_expr_operations','parser_patito.py',159),
-  ('expr -> INTEGER','expr',1,'p_expr_number','parser_patito.py',165),
-  ('expr -> FLOAT','expr',1,'p_expr_number','parser_patito.py',166),
-  ('expr -> ID','expr',1,'p_expr_variable','parser_patito.py',171),
-  ('expr -> cte','expr',1,'p_expr_constant','parser_patito.py',175),
-  ('expr -> LPAREN expr RPAREN','expr',3,'p_expr_group','parser_patito.py',179),
-  ('relexpr -> expr LT expr','relexpr',3,'p_relexpr','parser_patito.py',187),
-  ('relexpr -> expr GT expr','relexpr',3,'p_relexpr','parser_patito.py',188),
-  ('relexpr -> expr EQUALS expr','relexpr',3,'p_relexpr','parser_patito.py',189),
-  ('relexpr -> expr NE expr','relexpr',3,'p_relexpr','parser_patito.py',190),
-  ('condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON','condition',8,'p_condition','parser_patito.py',197),
-  ('condition -> IF LPAREN relexpr RPAREN body SCOLON','condition',6,'p_condition','parser_patito.py',198),
-  ('cte -> CTEINT','cte',1,'p_cte','parser_patito.py',205),
-  ('cte -> CTEFLOAT','cte',1,'p_cte','parser_patito.py',206),
-  ('empty -> <empty>','empty',0,'p_empty','parser_patito.py',212),
+  ('programa -> PROGRAM ID SCOLON vars body END','programa',6,'p_programa','parser_patito.py',21),
+  ('vars -> VAR typed_vars vars','vars',3,'p_vars','parser_patito.py',34),
+  ('vars -> empty','vars',1,'p_vars','parser_patito.py',35),
+  ('typed_vars -> vars_list COLON type SCOLON typed_vars','typed_vars',5,'p_typed_vars','parser_patito.py',71),
+  ('typed_vars -> empty','typed_vars',1,'p_typed_vars','parser_patito.py',72),
+  ('vars_list -> ID','vars_list',1,'p_vars_list','parser_patito.py',85),
+  ('vars_list -> ID COMMA vars_list','vars_list',3,'p_vars_list','parser_patito.py',86),
+  ('type -> INTEGER','type',1,'p_type','parser_patito.py',94),
+  ('type -> FLOAT','type',1,'p_type','parser_patito.py',95),
+  ('body -> LBRACE listofstatements RBRACE','body',3,'p_body','parser_patito.py',102),
+  ('listofstatements -> statement listofstatements','listofstatements',2,'p_s','parser_patito.py',109),
+  ('listofstatements -> empty','listofstatements',1,'p_s','parser_patito.py',110),
+  ('statement -> assign','statement',1,'p_statement','parser_patito.py',117),
+  ('statement -> condition','statement',1,'p_statement','parser_patito.py',118),
+  ('statement -> cycle','statement',1,'p_statement','parser_patito.py',119),
+  ('statement -> print','statement',1,'p_statement','parser_patito.py',120),
+  ('print -> COUT LPAREN listedexpr RPAREN SCOLON','print',5,'p_print','parser_patito.py',127),
+  ('listedexpr -> c','listedexpr',1,'p_listedexpr','parser_patito.py',134),
+  ('listedexpr -> c COMMA c m','listedexpr',4,'p_listedexpr','parser_patito.py',135),
+  ('c -> expr','c',1,'p_c','parser_patito.py',151),
+  ('c -> relexpr','c',1,'p_c','parser_patito.py',152),
+  ('c -> CTESTRING','c',1,'p_c','parser_patito.py',153),
+  ('m -> COMMA c m','m',3,'p_m','parser_patito.py',161),
+  ('m -> empty','m',1,'p_m','parser_patito.py',162),
+  ('assign -> ID EQUALS expr SCOLON','assign',4,'p_assign','parser_patito.py',171),
+  ('cycle -> DO body WHILE LPAREN relexpr RPAREN SCOLON','cycle',7,'p_cycle','parser_patito.py',184),
+  ('expr -> expr PLUS expr','expr',3,'p_expr_operations','parser_patito.py',190),
+  ('expr -> expr MINUS expr','expr',3,'p_expr_operations','parser_patito.py',191),
+  ('expr -> expr TIMES expr','expr',3,'p_expr_operations','parser_patito.py',192),
+  ('expr -> expr DIVIDE expr','expr',3,'p_expr_operations','parser_patito.py',193),
+  ('expr -> ID','expr',1,'p_expr_variable','parser_patito.py',199),
+  ('expr -> cte','expr',1,'p_expr_constant','parser_patito.py',208),
+  ('expr -> LPAREN expr RPAREN','expr',3,'p_expr_group','parser_patito.py',212),
+  ('relexpr -> expr LT expr','relexpr',3,'p_relexpr','parser_patito.py',220),
+  ('relexpr -> expr GT expr','relexpr',3,'p_relexpr','parser_patito.py',221),
+  ('relexpr -> expr EQUALS expr','relexpr',3,'p_relexpr','parser_patito.py',222),
+  ('relexpr -> expr NE expr','relexpr',3,'p_relexpr','parser_patito.py',223),
+  ('condition -> IF LPAREN relexpr RPAREN body ELSE body SCOLON','condition',8,'p_condition','parser_patito.py',230),
+  ('condition -> IF LPAREN relexpr RPAREN body SCOLON','condition',6,'p_condition','parser_patito.py',231),
+  ('cte -> CTEINT','cte',1,'p_cte','parser_patito.py',248),
+  ('cte -> CTEFLOAT','cte',1,'p_cte','parser_patito.py',249),
+  ('empty -> <empty>','empty',0,'p_empty','parser_patito.py',255),
 ]
