@@ -7,20 +7,19 @@ tokens = lexer_patito.tokens
 precedence = (
     ('left', 'LT', 'GT'),
     ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE'),
+    ('left', 'TIMES', 'DIVIDE')
 )
 
 variableDict = {}
 # Initializing a queue
-listofinstructions = Queue()
-
+quadruples = []
+temps = []
+pendinglocs = []
 
 def p_programa(p):
     '''
     programa : PROGRAM ID SCOLON vars body END
     '''
-    for i in p[5]:
-        print("\n", i)
     p[0] = p[5]
 
 def p_vars(p):
@@ -95,24 +94,13 @@ def p_body(p):
     '''
     body : LBRACE listofstatements RBRACE
     '''
-    #print("Body: " ,p[2])
-    global listofinstructions
-    listofinstructions.reverse()
-    p[0] = listofinstructions
-    listofinstructions = []
+
 
 def p_s(p):
     '''
     listofstatements : statement listofstatements
                      | empty
     '''
-
-    global listofinstructions
-    if(len(p) > 2):
-        listofinstructions.append(p[1])
-    else:  
-        listofinstructions = []
-        
 
 def p_statement(p):
     '''
@@ -121,6 +109,7 @@ def p_statement(p):
               | cycle
               | print
     '''
+
     p[0] = p[1]
 
 def p_print(p):
@@ -150,7 +139,7 @@ def p_listedexpr(p):
 def p_c(p):
     '''
     c :  expr
-      |  relexpr
+      |  relexprcond
       |  CTESTRING
 
     '''
@@ -175,22 +164,48 @@ def p_assign(p):
         print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
         raise SystemExit
     
-    p[0] = (p[1], p[2], p[3])
+    global temps
+    quadruples.append([len(quadruples)+1,p[2], p[1],  "t" + str(len(temps))])
+    
+    p[0] = ("ASSIGN", p[1], p[3])
 
 def p_cycle(p):
     '''
-    cycle :  DO body WHILE LPAREN relexpr RPAREN SCOLON
+    cycle :  do body WHILE LPAREN relexprcycle RPAREN SCOLON
     '''
-    #.put(("CYCLE", p[2], p[5]))
+
     p[0] = ("CYCLE", p[2], p[5])
+
+def p_cycle_do_mark(p):
+    '''
+    do :  DO 
+    '''
+
+    global quadruples
+    global pendinglocs
+    pendinglocs.append(len(quadruples)+1)
+
+    p[0] = p[1]
 
 def p_expr_operations(p):
     '''expr : expr PLUS expr
             | expr MINUS expr
             | expr TIMES expr
             | expr DIVIDE expr'''
+    
+    #print("P1: ", p[1], "Length: ", len(p[1]), "P3: ", p[3], "Length: ", len(p[3]))
 
-    p[0] = ('BINOP', p[2], p[1], p[3])
+    global quadruples
+    global temps
+    if(len(p[1]) == 2 and len(p[3])== 2):
+        quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3][1], "t" + str(len(temps)+1)])
+
+        #obviously this will eventually have an actual value, not just a string
+        p[0] = ('CTEVAL', "t" + str(len(temps)+1))
+        temps.append("val")
+
+    else:
+        p[0] = ('BINOP', p[2], p[1], p[3])
     
     
 def p_expr_variable(p):
@@ -213,24 +228,81 @@ def p_expr_group(p):
     
 # Relational expressions
 
-def p_relexpr(p):
-    '''relexpr : expr LT expr
+def p_relexprcond(p):
+    '''relexprcond : expr LT expr
                | expr GT expr
                | expr EQUALS expr
                | expr NE expr'''
     
-    p[0] = ('RELOP', p[2], p[1], p[3])
+
+    global quadruples
+    global temps
+    if(len(p[1]) == 2 and len(p[3])== 2):
+        quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3][1], "t" + str(len(temps)+1)])
+
+        #obviously this will eventually have an actual value, not just a string
+        p[0] = ('CTEVAL', "t" + str(len(temps)+1))
+        temps.append("val")
+    else:
+        p[0] = ('RELOP', p[2], p[1], p[3])
+
+    quadruples.append([len(quadruples)+1, "GOTOF",  "t" + str(len(temps)), "unknownloc"])
+    pendinglocs.append(len(quadruples))
+    
+
+# Relational expressions
+def p_relexprcycle(p):
+    '''relexprcycle : expr LT expr
+               | expr GT expr
+               | expr EQUALS expr
+               | expr NE expr'''
+    
+    global quadruples
+    global temps
+    global pendinglocs
+    if(len(p[1]) == 2 and len(p[3])== 2):
+        quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3][1], "t" + str(len(temps)+1)])
+
+        #obviously this will eventually have an actual value, not just a string
+        p[0] = ('CTEVAL', "t" + str(len(temps)+1))
+        temps.append("val")
+    else:
+        p[0] = ('RELOP', p[2], p[1], p[3])
+
+    loc = pendinglocs.pop()
+    quadruples.append([len(quadruples)+1, "GOTOT",  "t" + str(len(temps)), loc])
 
 
 def p_condition(p):
     '''
-    condition : IF LPAREN relexpr RPAREN body ELSE body SCOLON
-              | IF LPAREN relexpr RPAREN body SCOLON
+    condition : IF LPAREN relexprcond RPAREN body else body SCOLON
+              | IF LPAREN relexprcond RPAREN body ifend
     '''
+    global quadruples
+    global pendinglocs
     if len(p) == 9:
         p[0] = ("CONIFE", p[3], "GOTOT:",p[5], "GOTOF",p[7])
+ 
     else:
         p[0] = ("CONIF", p[3], "GOTOT:", p[5])
+
+def p_else_mark(p):
+    '''
+    else : ELSE
+    '''
+    global quadruples
+    global pendinglocs
+    loc = pendinglocs.pop()-1
+    quadruples[loc][3] = len(quadruples)+1
+
+def p_ifend(p):
+    '''
+    ifend : SCOLON
+    '''
+    global quadruples
+    global pendinglocs
+    loc = pendinglocs.pop()-1
+    quadruples[loc][3] = len(quadruples)+1
 
 
 def p_cte(p):
@@ -254,9 +326,14 @@ def p_error(p):
 
 def reset_variables():
     global variableDict
+    global quadruples
+    global temps
+    global pendinglocs
+    
     variableDict = {}
+    quadruples = []
+    temps = []
+    pendinglocs = []
 
 # Build the parser
 parser = yacc.yacc()
-
-#print(variableDict)

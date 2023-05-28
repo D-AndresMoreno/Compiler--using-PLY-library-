@@ -13,6 +13,7 @@ program PATITOS10;
 var X:int; Z:float;
 var J:float; K:float;
 {
+
     X=1+1;
 
     if (5 > 0) {
@@ -22,6 +23,8 @@ var J:float; K:float;
         X = 1 / 3;
     };
 
+    K = 9 + 5;
+    
     do {
         X = 4*5;
     } while(5>6);
@@ -32,11 +35,13 @@ end
 
 ''')
 
-#print(test1)
-#print("Variables TEST 1: ", parser_patito.variableDict)
-#print("Instructions TEST 1: \n", list(parser_patito.listofinstructions.queue))
-parser_patito.reset_variables()
 
+print("\nTEST 1: TESTING EVERYTHING\n")
+
+for i in parser_patito.quadruples:
+    print("\n",i)
+
+parser_patito.reset_variables()
 
 
 #TEST 2: TESTING EXPRESIONS
@@ -51,45 +56,25 @@ var A:float; M:float;
     M = 1;
     M = L;
 
-    M=1+1;
-    M=2-1;
-    M=2*1;
-    M=2/1;
-
-    M=P+1;
-    M=P-1;
-    M=P*1;
-    M=P/1;
-
-    M=1+P;
-    M=1-P;
-    M=1*P;
-    M=1/P;
-
-    M=P+P;
-    M=P-P;
-    M=P*P;
-    M=P/P;
-
     M = (P+1) + (2);
     M = (P/1) + (2*P);
     M = (1) + (2*P);
     M = ((P/1) + (M) / (2*P) * ((1)+2+P));
 
     if(1> 2){
-    
+        M = 1;
     };
 
     if(P > 2){
-    
+        M = 2;
     };
 
     if(P < M){
-    
+        M = 3;
     };
 
     if(((P/1) + (M) / (2*P) * ((1)+2+P)) > 1){
-    
+        M = 4;
     };
 
 }
@@ -98,9 +83,14 @@ end
 
 ''')
 
-#print(test2)
-#print("\nVariables TEST 2: ", parser_patito.variableDict)
+print("\nTEST 2: TESTING EXPRESIONS\n")
+
+for i in parser_patito.quadruples:
+    print("\n",i)
+
 parser_patito.reset_variables()
+
+
 
 
 
@@ -114,10 +104,8 @@ var P:int; L:float;
 var A:float; M:float;
 {
     do {
-         cout(P, "hey", 1+1, (P+P*1));
-    } while(A > M);
-
-    cout(A>L, 8);
+        P = P+1;
+    } while(P > M);
 
 }
 
@@ -125,9 +113,14 @@ end
 
 ''')
 
-#print(test3)
-#print("\nVariables TEST 3: ", parser_patito.variableDict)
+
+print("\nTEST 3: TESTING CYCLES\n")
+
+for i in parser_patito.quadruples:
+    print("\n",i)
+
 parser_patito.reset_variables()
+
 
 
 #TEST 4: TESTING CONDITIONALS
@@ -162,12 +155,13 @@ end
 
 ''')
 
+print("\n#TEST 4: TESTING CONDITIONALS\n")
 
+for i in parser_patito.quadruples:
+    print("\n",i)
 
-#print(test4)
-#print("Variables TEST 4: ", parser_patito.variableDict)
-#print("Instructions TEST 4: \n", list(parser_patito.listofinstructions.queue))
 parser_patito.reset_variables()
+
 
 
 #TEST 5: TESTING PRINTS
@@ -191,7 +185,37 @@ end
 
 ''')
 
-#print(test5)
-#print("\nVariables TEST 5: ", parser_patito.variableDict)
+print("\nTESTING PRINTS\n")
+
+for i in parser_patito.quadruples:
+    print("\n",i)
+
 parser_patito.reset_variables()
+
+
+
+
+#TEST 6: TESTING EXPRESSIONS (SMALL)
+
+test6 = parser_tester.parse('''
+
+program PATITOS10;
+
+var P:int; L:float;
+var A:float; M:float;
+{
+    A = 1+2*3/4+5;
+}
+
+end
+
+''')
+
+print("\nTEST 6: TESTING EXPRESSIONS (SMALL)\n")
+for i in parser_patito.quadruples:
+    print("\n",i)
+
+parser_patito.reset_variables()
+
+
 
