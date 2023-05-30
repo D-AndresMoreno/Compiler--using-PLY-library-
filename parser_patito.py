@@ -313,14 +313,26 @@ def p_relexprcycle(p):
     global quadruples
     global temps
     global pendinglocs
-    if(len(p[1]) == 2 and len(p[3])== 2):
+    if(len(p[1]) == 2 and len(p[3])== 2 and isinstance(p[1], tuple) and isinstance(p[3], tuple)):
         quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3][1], "t" + str(len(temps)+1)])
-
         #obviously this will eventually have an actual value, not just a string
         p[0] = ('CTEVAL', "t" + str(len(temps)+1))
         temps.append("val")
+    elif(isinstance(p[1], str) and isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1], p[3], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
+    elif(len(p[3])== 2 and isinstance(p[1], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1], p[3][1], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
+    elif(len(p[1]) == 2 and isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
     else:
         p[0] = ('RELOP', p[2], p[1], p[3])
+        print(p[0])
 
     loc = pendinglocs.pop()
     quadruples.append([len(quadruples)+1, "GOTOT",  "t" + str(len(temps)), loc])
