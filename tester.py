@@ -59,7 +59,7 @@ var A:float; M:float;
     M = (P+1) + (2);
     M = (P/1) + (2*P);
     M = (1) + (2*P);
-    M = ((P/1) + (M) / (2*P) * ((1)+2+P));
+    A = ((P/1) + (M) / (2*P) * ((1)+2+P));
 
     if(1> 2){
         M = 1;
@@ -178,7 +178,7 @@ var A:float; M:float;
     cout(1, 2, 3);
     cout(4, 5);
     cout(P);
-    cout(P + 2, (A-1)+1, "hey");
+    cout(P , A, "hey");
 }
 
 end
@@ -191,8 +191,6 @@ for i in parser_patito.quadruples:
     print("\n",i)
 
 parser_patito.reset_variables()
-
-
 
 
 #TEST 6: TESTING EXPRESSIONS (SMALL)

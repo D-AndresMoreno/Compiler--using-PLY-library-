@@ -20,7 +20,9 @@ def p_programa(p):
     '''
     programa : PROGRAM ID SCOLON vars body END
     '''
+    global quadruples
     p[0] = p[5]
+    quadruples.append([len(quadruples)+1,"END"])
 
 def p_vars(p):
     '''
@@ -112,12 +114,16 @@ def p_statement(p):
 
     p[0] = p[1]
 
+pendingPrints = []
 def p_print(p):
     '''
     print :  COUT LPAREN listedexpr RPAREN SCOLON
     '''
-
+    global pendingPrints
+    pendingPrints.append(p[3])
+    quadruples.append([len(quadruples)+1,"PRINT", "p" + str(len(pendingPrints))])
     p[0] = ("PRINT", p[3])
+
 
 def p_listedexpr(p):
     '''
@@ -138,8 +144,8 @@ def p_listedexpr(p):
 
 def p_c(p):
     '''
-    c :  expr
-      |  relexprcond
+    c :  ID
+      |  cte
       |  CTESTRING
 
     '''
@@ -165,8 +171,14 @@ def p_assign(p):
         raise SystemExit
     
     global temps
-    quadruples.append([len(quadruples)+1,p[2], p[1],  "t" + str(len(temps))])
-    
+    if(len(p[3]) == 2 and isinstance(p[3], tuple) and len(p[3][1]) == 1 ):
+        #print("Yo fui el culpable alv: ", p[3], "Len: ", len(p[3]))
+        #print("1: ", p[3][0], "2: ", p[3][1], "\n\n")
+        quadruples.append([len(quadruples)+1,p[2], p[1], p[3][1]])
+    elif(isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1,p[2], p[1], p[3]])
+    else:
+        print("Ando perdido", p[3], len(p[3]))
     p[0] = ("ASSIGN", p[1], p[3])
 
 def p_cycle(p):
@@ -197,33 +209,62 @@ def p_expr_operations(p):
 
     global quadruples
     global temps
-    if(len(p[1]) == 2 and len(p[3])== 2):
+    if(len(p[1]) == 2 and len(p[3])== 2 and isinstance(p[1], tuple) and isinstance(p[3], tuple)):
+        #print("P1: ", p[1], "Length: ", len(p[1]), "\nP3: ", p[3], "Length: ", len(p[3]))
         quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3][1], "t" + str(len(temps)+1)])
-
-        #obviously this will eventually have an actual value, not just a string
-        p[0] = ('CTEVAL', "t" + str(len(temps)+1))
+        p[0] = ("t" + str(len(temps)+1))
         temps.append("val")
-
+    elif(isinstance(p[1], str) and isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1], p[3], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
+    elif(len(p[3])== 2 and isinstance(p[1], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1], p[3][1], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
+    elif(len(p[1]) == 2 and isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
     else:
         p[0] = ('BINOP', p[2], p[1], p[3])
+        print(p[0])
     
     
 def p_expr_variable(p):
-    '''expr : ID'''
+    '''expr : ID
+            | LPAREN ID RPAREN'''
 
-    if p[1] not in variableDict:
-        print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
-        raise SystemExit
+    if len(p) > 2:
+        if p[2] not in variableDict:
+            print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
+            raise SystemExit
+        p[0] = ('VAR', p[2])
+    else:
+        if p[1] not in variableDict:
+            print("Syntax Error: VARIABLE NOT DECLARED (SHOULD BE DECLARED OUTSIDE OF BODY)")
+            raise SystemExit
+        p[0] = ('VAR', p[1])
 
-    p[0] = ('VAR', p[1])
+    
+   
+
+    
 
 def p_expr_constant(p):
-    '''expr : cte'''
-    p[0] = ('CTEVAL', p[1])
+    '''expr : cte
+            | LPAREN cte RPAREN'''
+    if len(p) > 2:
+        p[0] = ('CTEVAL', p[2])
+    else:
+        p[0] = ('CTEVAL', p[1])
 
 def p_expr_group(p):
     '''expr : LPAREN expr RPAREN'''
-    p[0] = ('GROUP', p[2])
+
+    p[0] = p[2]
+
+
 
     
 # Relational expressions
@@ -237,18 +278,30 @@ def p_relexprcond(p):
 
     global quadruples
     global temps
-    if(len(p[1]) == 2 and len(p[3])== 2):
+    if(len(p[1]) == 2 and len(p[3])== 2 and isinstance(p[1], tuple) and isinstance(p[3], tuple)):
         quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3][1], "t" + str(len(temps)+1)])
-
         #obviously this will eventually have an actual value, not just a string
         p[0] = ('CTEVAL', "t" + str(len(temps)+1))
         temps.append("val")
+    elif(isinstance(p[1], str) and isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1], p[3], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
+    elif(len(p[3])== 2 and isinstance(p[1], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1], p[3][1], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
+    elif(len(p[1]) == 2 and isinstance(p[3], str)):
+        quadruples.append([len(quadruples)+1, p[2], p[1][1], p[3], "t" + str(len(temps)+1)])
+        p[0] = ("t" + str(len(temps)+1))
+        temps.append("val")
     else:
         p[0] = ('RELOP', p[2], p[1], p[3])
+        print(p[0])
 
     quadruples.append([len(quadruples)+1, "GOTOF",  "t" + str(len(temps)), "unknownloc"])
     pendinglocs.append(len(quadruples))
-    
+
 
 # Relational expressions
 def p_relexprcycle(p):
@@ -329,11 +382,13 @@ def reset_variables():
     global quadruples
     global temps
     global pendinglocs
+    global pendingPrints
     
     variableDict = {}
     quadruples = []
     temps = []
     pendinglocs = []
+    pendingPrints = []
 
 # Build the parser
 parser = yacc.yacc()
