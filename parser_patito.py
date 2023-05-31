@@ -46,11 +46,11 @@ def p_vars(p):
                                 raise SystemExit
                         else:  
                             if vars[char_var+1] == 'f':
-                                    variableDict[temp] = 'float'
+                                    variableDict[temp] = ('float', None)
                                     char_var+=6
                                     temp = ""
                             else:
-                                variableDict[temp] = 'int'
+                                variableDict[temp] = ('int', None)
                                 char_var+=4
                                 temp = ""
                         
@@ -120,8 +120,13 @@ def p_print(p):
     print :  COUT LPAREN listedexpr RPAREN SCOLON
     '''
     global pendingPrints
-    pendingPrints.append(p[3])
-    quadruples.append([len(quadruples)+1,"PRINT", "p" + str(len(pendingPrints))])
+    if(isinstance(p[3], list)):
+        for i in p[3]:
+            quadruples.append([len(quadruples)+1,"PRINT", i])
+    else:
+        quadruples.append([len(quadruples)+1,"PRINT", p[3]])
+
+       
     p[0] = ("PRINT", p[3])
 
 
@@ -161,6 +166,22 @@ def p_m(p):
     if(len(p) > 2):
         listexpr.append(p[2])
 
+def isDigitOrFloatOrVar(x):
+    if(x.isdigit()):
+        return True
+    elif(isinstance(x, str)):
+        if x in variableDict:
+            return True
+        try:
+            float(x)
+            return True
+        except ValueError:
+            return False
+    else:
+        print("Wtf is this: ", type(x))
+        return False
+
+
 def p_assign(p):
     '''
     assign :  ID EQUALS expr SCOLON
@@ -171,7 +192,7 @@ def p_assign(p):
         raise SystemExit
     
     global temps
-    if(len(p[3]) == 2 and isinstance(p[3], tuple) and len(p[3][1]) == 1 ):
+    if(len(p[3]) == 2 and isinstance(p[3], tuple) and (isDigitOrFloatOrVar(p[3][1]))):
         #print("Yo fui el culpable alv: ", p[3], "Len: ", len(p[3]))
         #print("1: ", p[3][0], "2: ", p[3][1], "\n\n")
         quadruples.append([len(quadruples)+1,p[2], p[1], p[3][1]])
@@ -179,6 +200,7 @@ def p_assign(p):
         quadruples.append([len(quadruples)+1,p[2], p[1], p[3]])
     else:
         print("Ando perdido", p[3], len(p[3]))
+        print("Que da esto? ", type(p[3][1]))
     p[0] = ("ASSIGN", p[1], p[3])
 
 def p_cycle(p):
@@ -246,10 +268,6 @@ def p_expr_variable(p):
             raise SystemExit
         p[0] = ('VAR', p[1])
 
-    
-   
-
-    
 
 def p_expr_constant(p):
     '''expr : cte
@@ -264,9 +282,6 @@ def p_expr_group(p):
 
     p[0] = p[2]
 
-
-
-    
 # Relational expressions
 
 def p_relexprcond(p):
@@ -347,7 +362,9 @@ def p_condition(p):
     global pendinglocs
     if len(p) == 9:
         p[0] = ("CONIFE", p[3], "GOTOT:",p[5], "GOTOF",p[7])
- 
+        loc = pendinglocs.pop()-1
+        quadruples[loc][2] = len(quadruples)+1
+        print(loc)
     else:
         p[0] = ("CONIF", p[3], "GOTOT:", p[5])
 
@@ -357,8 +374,11 @@ def p_else_mark(p):
     '''
     global quadruples
     global pendinglocs
+    quadruples.append([len(quadruples)+1, "GOTO", "unknownloc"])
     loc = pendinglocs.pop()-1
     quadruples[loc][3] = len(quadruples)+1
+    pendinglocs.append(len(quadruples))
+
 
 def p_ifend(p):
     '''
@@ -388,6 +408,7 @@ def p_error(p):
          #parser.errok()
     else:
          print("Syntax error at EOF")
+
 
 def reset_variables():
     global variableDict

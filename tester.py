@@ -10,24 +10,23 @@ test1 = parser_tester.parse('''
 
 program PATITOS10;
 
-var X:int; Z:float;
-var J:float; K:float;
+var NT1:int; NT2:int; COUNT:int; NTH:int;
+var NTERMS:int;
 {
+    NT1 = 0;
+    NT2 = 1;
+    NTERMS = 7;
+    COUNT = 0;
 
-    X=1+1;
-
-    if (5 > 0) {
-        X = 1 + 2;
-        X = 2 + 1;
-    } else {
-        X = 1 / 3;
-    };
-
-    K = 9 + 5;
+    do{
+        cout(NT1);
+        NTH = NT1 + NT2;
+       
+        NT1 = NT2;
+        NT2 = NTH;
+        COUNT = COUNT + 1;
     
-    do {
-        X = 4*5;
-    } while(5>6);
+    }while(COUNT < NTERMS);
 
 }
 
@@ -38,182 +37,204 @@ end
 
 print("\nTEST 1: TESTING EVERYTHING\n")
 
-for i in parser_patito.quadruples:
-    print("\n",i)
+
+def checkVarValue(var):
+    #print("A ver",var)
+    if var in variabledict:
+        
+        if(variabledict[var][1] == None):
+            print("Variable needs to be assigned a value before using it")
+            raise SystemExit
+        
+        if(variabledict[var][0] == "float"):
+            return float(variabledict[var][1])
+        if(variabledict[var][0] == "int"):
+            return int(variabledict[var][1])
+    else:
+        #print("Variable doesnt exist in dictionary")
+        return -1
+
+def isDigitOrFloat(x):
+    if(x.isdigit()):
+        return True
+    elif(isinstance(x, str)):
+        try:
+            float(x)
+            return True
+        except ValueError:
+            return False
+    else:
+        print("Wtf is this: ", type(x))
+        return False
+        
+
+
+eof = False
+count = 0
+
+temps = parser_patito.temps
+quadruples  = parser_patito.quadruples
+variabledict = parser_patito.variableDict
+pendingPrints = parser_patito.pendingPrints
+pendingPrints.reverse()
+
+#print("Before: ", variabledict)
+
+while(not eof):
+    #print(quadruples[count])
+
+    if(quadruples[count][1] == '+'):
+        indexoftemp = int(quadruples[count][4][1:])-1
+        #print("Index :", indexoftemp)
+        if(isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            temps[indexoftemp] = float(quadruples[count][2]) + float(quadruples[count][3]) 
+        elif(not isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            val1 = checkVarValue(quadruples[count][2])
+            temps[indexoftemp] = val1 + float(quadruples[count][3]) 
+        elif(isDigitOrFloat(quadruples[count][2]) and not isDigitOrFloat(quadruples[count][3])):
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = float(quadruples[count][2]) + val2
+        else:
+            #las dos son variables 
+            val1 = checkVarValue(quadruples[count][2])
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = val1 + val2
+
+    elif(quadruples[count][1] == '-'):
+        indexoftemp = int(quadruples[count][4][1:])-1
+        #print("Index :", indexoftemp)
+        if(isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            temps[indexoftemp] = float(quadruples[count][2]) - float(quadruples[count][3]) 
+        elif(not isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            val1 = checkVarValue(quadruples[count][2])
+            temps[indexoftemp] = val1 - float(quadruples[count][3]) 
+        elif(isDigitOrFloat(quadruples[count][2]) and not isDigitOrFloat(quadruples[count][3])):
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = float(quadruples[count][2]) - val2
+        else:
+            val1 = checkVarValue(quadruples[count][2])
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = val1 - val2
+    
+    elif(quadruples[count][1] == '*'):
+        indexoftemp = int(quadruples[count][4][1:])-1
+        #print("Index :", indexoftemp)
+        if(isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            temps[indexoftemp] = float(quadruples[count][2]) * float(quadruples[count][3]) 
+        elif(not isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            val1 = checkVarValue(quadruples[count][2])
+            temps[indexoftemp] = val1 * float(quadruples[count][3]) 
+        elif(isDigitOrFloat(quadruples[count][2]) and not isDigitOrFloat(quadruples[count][3])):
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = float(quadruples[count][2]) * val2
+        else:
+            val1 = checkVarValue(quadruples[count][2])
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = val1 * val2
+
+    
+    elif(quadruples[count][1] == '/'):
+        indexoftemp = int(quadruples[count][4][1:])-1
+        #print("Index :", indexoftemp)
+        if(isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            temps[indexoftemp] = float(quadruples[count][2]) / float(quadruples[count][3]) 
+        elif(not isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            val1 = checkVarValue(quadruples[count][2])
+            temps[indexoftemp] = val1 / float(quadruples[count][3]) 
+        elif(isDigitOrFloat(quadruples[count][2]) and not isDigitOrFloat(quadruples[count][3])):
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = float(quadruples[count][2]) / val2
+        else:
+            val1 = checkVarValue(quadruples[count][2])
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = val1 + val2
+
+    elif(quadruples[count][1] == '='):
+        typeof = variabledict[quadruples[count][2]][0]
+        if(isDigitOrFloat(quadruples[count][3])):
+            if(isDigitOrFloat(quadruples[count][3])):
+                typeof = 'int'
+            else:
+                typeof = 'float'
+            variabledict[quadruples[count][2]] = (typeof, quadruples[count][3])
+        elif checkVarValue((quadruples[count][3])) != -1:
+            variabledict[quadruples[count][2]] = (typeof, variabledict[quadruples[count][3]][1])
+        else:
+            #print("wtf", quadruples[count][3][1:])
+            #print("wTF:", int(quadruples[count][3][1:])-1)
+            indexoftemp = int(quadruples[count][3][1:])-1
+            variabledict[quadruples[count][2]] = (typeof, temps[indexoftemp])
+    
+    elif(quadruples[count][1] == '>'):
+        indexoftemp = int(quadruples[count][4][1:])-1
+        #print("Index :", indexoftemp)
+        if(isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            temps[indexoftemp] = float(quadruples[count][2]) > float(quadruples[count][3]) 
+        elif(not isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            val1 = checkVarValue(quadruples[count][2])
+            temps[indexoftemp] = val1 > float(quadruples[count][3]) 
+        elif(isDigitOrFloat(quadruples[count][2]) and not isDigitOrFloat(quadruples[count][3])):
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = float(quadruples[count][2]) > val2
+        else:
+            val1 = checkVarValue(quadruples[count][2])
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = val1 > val2
+
+    elif(quadruples[count][1] == '<'):
+        indexoftemp = int(quadruples[count][4][1:])-1
+        #print("Index :", indexoftemp)
+        if(isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            temps[indexoftemp] = float(quadruples[count][2]) < float(quadruples[count][3]) 
+        elif(not isDigitOrFloat(quadruples[count][2]) and isDigitOrFloat(quadruples[count][3])):
+            val1 = checkVarValue(quadruples[count][2])
+            temps[indexoftemp] = val1 < float(quadruples[count][3]) 
+        elif(isDigitOrFloat(quadruples[count][2]) and not isDigitOrFloat(quadruples[count][3])):
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = float(quadruples[count][2]) < val2
+        else:
+            val1 = checkVarValue(quadruples[count][2])
+            val2 = checkVarValue(quadruples[count][3])
+            temps[indexoftemp] = val1 < val2
+            #las dos son variables 
+    
+    elif(quadruples[count][1] == 'GOTO'):
+        ## Le restamos 2 al final porque los cuadruplos empiezan desde 1 (no 0), y para el contador de al final del while
+        count  = int(quadruples[count][2]) - 2
+
+    elif(quadruples[count][1] == 'GOTOF'):
+        indexoftemp = int(quadruples[count][2][1:])-1
+        if(not temps[indexoftemp]):
+            ## Le restamos 2 al final porque los cuadruplos empiezan desde 1 (no 0), y para el contador de al final del while
+            count  = int(quadruples[count][3]) - 2
+
+    elif(quadruples[count][1] == 'GOTOT'):
+        indexoftemp = int(quadruples[count][2][1:])-1
+        if(temps[indexoftemp]):
+            ## Le restamos 2 al final porque los cuadruplos empiezan desde 1 (no 0), y para el contador de al final del while
+            count  = int(quadruples[count][3]) - 2
+
+    elif(quadruples[count][1] == 'PRINT'):
+
+        prints  =  quadruples[count][2]
+        #print(quadruples[count])
+
+        if(isDigitOrFloat(prints)):
+            print(prints)
+        elif(isinstance(prints, str)):
+            if(checkVarValue(prints) == -1):
+                #print("Yo soy el culpable: ", prints)
+                print(prints)
+            else:
+                print(variabledict[prints][1])
+
+    elif(quadruples[count][1] == "END"):
+        eof = True
+
+    else:
+        print("Unrecognized token: ", quadruples[count][1])
+    count += 1
+
+#print("After: ", variabledict)
 
 parser_patito.reset_variables()
-
-
-#TEST 2: TESTING EXPRESIONS
-
-test2 = parser_tester.parse('''
-
-program PATITOS10;
-
-var P:int; L:float;
-var A:float; M:float;
-{
-    M = 1;
-    M = L;
-
-    M = (P+1) + (2);
-    M = (P/1) + (2*P);
-    M = (1) + (2*P);
-    A = ((P/1) + (M) / (2*P) * ((1)+2+P));
-
-    if(1> 2){
-        M = 1;
-    };
-
-    if(P > 2){
-        M = 2;
-    };
-
-    if(P < M){
-        M = 3;
-    };
-
-    if(((P/1) + (M) / (2*P) * ((1)+2+P)) > 1){
-        M = 4;
-    };
-
-}
-
-end
-
-''')
-
-print("\nTEST 2: TESTING EXPRESIONS\n")
-
-for i in parser_patito.quadruples:
-    print("\n",i)
-
-parser_patito.reset_variables()
-
-
-
-
-
-#TEST 3: TESTING CYCLES
-
-test3 = parser_tester.parse('''
-
-program PATITOS10;
-
-var P:int; L:float;
-var A:float; M:float;
-{
-    do {
-        P = P+1;
-    } while(P > M);
-
-}
-
-end
-
-''')
-
-
-print("\nTEST 3: TESTING CYCLES\n")
-
-for i in parser_patito.quadruples:
-    print("\n",i)
-
-parser_patito.reset_variables()
-
-
-
-#TEST 4: TESTING CONDITIONALS
-
-test4 = parser_tester.parse('''
-
-program PATITOS10;
-
-var P:int; M:float;
-var J:float; K:float;
-{
-    M = 1;
-
-    if (5 > 0) {
-         J = 1;
-         M = 1;
-         K = 1;
-    } else {
-        J = 2;
-        M = 2;
-        K = 2;
-    };
-
-    if(1<2){
-        P = 1 + 3;
-    };
-
-    cout("hey");
-}
-
-end
-
-''')
-
-print("\n#TEST 4: TESTING CONDITIONALS\n")
-
-for i in parser_patito.quadruples:
-    print("\n",i)
-
-parser_patito.reset_variables()
-
-
-
-#TEST 5: TESTING PRINTS
-
-test5 = parser_tester.parse('''
-
-program PATITOS10;
-
-var P:int; L:float;
-var A:float; M:float;
-{
-    cout(7, 8, 9 , 10, 11, 12);
-    cout(13, 14, 15 , 16, 17, 18);
-    cout(1, 2, 3);
-    cout(4, 5);
-    cout(P);
-    cout(P , A, "hey");
-}
-
-end
-
-''')
-
-print("\nTESTING PRINTS\n")
-
-for i in parser_patito.quadruples:
-    print("\n",i)
-
-parser_patito.reset_variables()
-
-
-#TEST 6: TESTING EXPRESSIONS (SMALL)
-
-test6 = parser_tester.parse('''
-
-program PATITOS10;
-
-var P:int; L:float;
-var A:float; M:float;
-{
-    A = 1+2*3/4+5;
-}
-
-end
-
-''')
-
-print("\nTEST 6: TESTING EXPRESSIONS (SMALL)\n")
-for i in parser_patito.quadruples:
-    print("\n",i)
-
-parser_patito.reset_variables()
-
-
-
